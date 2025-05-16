@@ -1,0 +1,1134 @@
+﻿<UserControl
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:core="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:PassagePlanner"
+        xmlns:Globalization="clr-namespace:System.Globalization;assembly=mscorlib"
+        xmlns:ignore="http://www.ignore.com"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:Custom="http://metro.mahapps.com/winfx/xaml/shared" 
+        xmlns:Custom1="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        x:Class="PassagePlanner.RouteDataUC"
+        mc:Ignorable="d ignore"
+        x:Name="UserControl"
+	    d:DesignWidth="893" d:DesignHeight="606" 
+        Loaded="UserControl_Loaded">
+    <UserControl.Resources>
+        
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!--<ResourceDictionary Source="../Skins/MainSkin.xaml"/>-->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="../Skins/Resources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <local:PositionValueConverter x:Key="positionConverter" />
+            <local:SystemDecimalConverter x:Key="decimalConverter" />
+            <local:NumberOfDecimalsConverter x:Key="numberOfDecimalsConverter" />
+            <local:NumberOfDecimalsWhenNeededConverter x:Key="numberOfDecimalsWhenNeededConverter" />
+            <local:DateConverter x:Key="dateConverter" />
+            <local:ErrorsToMessageConverter x:Key="errorsToMessageConverter" />
+            <local:LegTypeConverter x:Key="legTypeConverter" />
+            <local:WaypointsExistConverter x:Key="waypointsExistConverter" />
+            <local:WaypointsIsItemSourceConverter x:Key="waypointsIsItemSourceConverter" />
+
+
+
+            <ObjectDataProvider x:Key="legTypes" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="local:LegTypeType" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+
+            <Style TargetType="ToolTip">
+                <Setter Property = "Background" Value="Black"/>
+                <Setter Property = "Foreground" Value="White"/>
+                <Setter Property = "TextBlock.LineHeight" Value="17"/>
+                <Setter Property = "BorderBrush" Value="Black"/>
+                <Setter Property = "Padding" Value="4,4,4,2"/>
+            </Style>
+
+            <!-- Custom styling TextBox only to be able to override Validation.ErrorTemplate -->
+            <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource MetroTextBox}">
+                <Setter Property="Validation.ErrorTemplate">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <DockPanel LastChildFill="True">
+                                    <Popup IsOpen="True" PlacementTarget="{Binding ElementName=ErrorControl5}"   
+									    Placement="Right"       
+                                        HorizontalOffset="6"
+									    PopupAnimation="Fade"    
+									    AllowsTransparency="False">
+
+                                    <Grid Background="#FFE02010" >
+                                            <TextBlock Margin="4,4,4,2"
+											    Text="{Binding AdornedElement.(Validation.Errors)[0].ErrorContent, ElementName=ErrorControl5}"
+											    Height="18" Width="Auto" VerticalAlignment="Center" TextAlignment="Center"
+											    Foreground="White" Background="#FFE02010"/>
+                                        </Grid>
+                                    </Popup>
+                                <Border BorderBrush="#FFE02010" BorderThickness="2" >
+                                    <AdornedElementPlaceholder x:Name="ErrorControl5" Margin="-1.5"/>
+                                </Border>
+                             </DockPanel>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="SelectionBrush" Value="#AA119EDA"/>
+                <Setter Property="Padding" Value="0,1,0,0"/>
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="true">
+                        <Setter Property="BorderThickness" Value="0"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Custom styling DatePicker only to be able to override Validation.ErrorTemplate -->
+            <Style x:Key="DatePickerStyle" TargetType="{x:Type DatePicker}" BasedOn="{StaticResource MetroDatePicker}">
+                <Setter Property="Validation.ErrorTemplate">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <DockPanel LastChildFill="True">
+                                <Popup IsOpen="True" PlacementTarget="{Binding ElementName=ErrorControl6}"   
+									    Placement="Right"       
+                                        HorizontalOffset="6"
+									    PopupAnimation="Fade"    
+									    AllowsTransparency="False">
+
+                                    <Grid Background="#FFE02010" >
+                                        <TextBlock Margin="4,4,4,2"
+											    Text="{Binding AdornedElement.(Validation.Errors)[0].ErrorContent, ElementName=ErrorControl6}"
+											    Height="18" Width="Auto" VerticalAlignment="Center" TextAlignment="Center"
+											    Foreground="White" Background="#FFE02010"/>
+                                    </Grid>
+                                </Popup>
+                                <Border BorderBrush="#FFE02010" BorderThickness="2" >
+                                    <AdornedElementPlaceholder x:Name="ErrorControl6" Margin="-1.5"/>
+                                </Border>
+                            </DockPanel>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="true">
+                        <Setter Property="BorderThickness" Value="0"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="CenterAlign" TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource {x:Type DataGridCell}}">
+            	<Setter Property="HorizontalAlignment" Value="Center"/>
+            	<Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+
+            <Style x:Key="RightAlign" TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource {x:Type DataGridCell}}">
+            	<Setter Property="HorizontalAlignment" Value="Right"/>
+            	<Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+            
+        	<Style x:Key="PassagePlannerDataGridStyle" TargetType="{x:Type DataGrid}">
+        		<Setter Property="GridLinesVisibility" Value="None"/>
+        		<Setter Property="Background" Value="{DynamicResource WhiteColorBrush}"/>
+        		<Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}"/>
+        		<Setter Property="BorderThickness" Value="0"/>
+        		<Setter Property="ColumnHeaderStyle">
+        			<Setter.Value>
+        				<Style TargetType="{x:Type DataGridColumnHeader}">
+                            <EventSetter Event="Click" Handler="columnHeader_Click" />
+        					<Setter Property="SnapsToDevicePixels" Value="True"/>
+        					<Setter Property="MinWidth" Value="0"/>
+        					<Setter Property="MinHeight" Value="25"/>
+        					<Setter Property="Foreground" Value="{DynamicResource BlackColorBrush}"/>
+        					<Setter Property="Cursor" Value="Hand"/>
+        					<Setter Property="HorizontalContentAlignment" Value="Left"/>
+        					<Setter Property="VerticalContentAlignment" Value="Center"/>
+        					<Setter Property="Padding" Value="10,4,4,7"/>
+        					<Setter Property="Margin" Value="0"/>
+        					<Setter Property="BorderBrush" Value="{DynamicResource GrayBrush4}"/>
+        					<Setter Property="Background" Value="{DynamicResource GrayBrush8}"/>
+        					<Setter Property="Template">
+        						<Setter.Value>
+        							<ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
+        								<Grid>
+        									<Grid.ColumnDefinitions>
+        										<ColumnDefinition Width="*"/>
+        										<ColumnDefinition Width="Auto"/>
+        									</Grid.ColumnDefinitions>
+        									<Border x:Name="BackgroundBorder" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0,0,0,3" Background="{TemplateBinding Background}" Grid.ColumnSpan="2"/>
+        									<ContentPresenter x:Name="HeaderContent" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+        									<Path x:Name="SortArrow" Grid.Column="1" Fill="{DynamicResource GrayBrush2}" Height="10" Margin="0,0,8,2" RenderTransformOrigin="0.5,0.5" Stretch="Fill" Visibility="Collapsed" VerticalAlignment="Center" Width="8"/>
+        									<Thumb x:Name="PART_LeftHeaderGripper" Background="Transparent" HorizontalAlignment="Left" HorizontalContentAlignment="Left">
+        										<Thumb.Style>
+        											<Style TargetType="{x:Type Thumb}">
+        												<Setter Property="Width" Value="8"/>
+        												<Setter Property="Background" Value="{DynamicResource GrayBrush4}"/>
+        												<Setter Property="Cursor" Value="SizeWE"/>
+        												<Setter Property="Template">
+        													<Setter.Value>
+        														<ControlTemplate TargetType="{x:Type Thumb}">
+        															<Border Background="Transparent" Padding="{TemplateBinding Padding}">
+        																<Rectangle Fill="{TemplateBinding Background}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Width="1"/>
+        															</Border>
+        														</ControlTemplate>
+        													</Setter.Value>
+        												</Setter>
+        											</Style>
+        										</Thumb.Style>
+        									</Thumb>
+        									<Thumb x:Name="PART_RightHeaderGripper" Grid.Column="1" HorizontalAlignment="Right" HorizontalContentAlignment="Right">
+        										<Thumb.Style>
+        											<Style TargetType="{x:Type Thumb}">
+        												<Setter Property="Width" Value="8"/>
+        												<Setter Property="Background" Value="{DynamicResource GrayBrush4}"/>
+        												<Setter Property="Cursor" Value="SizeWE"/>
+        												<Setter Property="Template">
+        													<Setter.Value>
+        														<ControlTemplate TargetType="{x:Type Thumb}">
+        															<Border Background="Transparent" Padding="{TemplateBinding Padding}">
+        																<Rectangle Fill="{TemplateBinding Background}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Width="1"/>
+        															</Border>
+        														</ControlTemplate>
+        													</Setter.Value>
+        												</Setter>
+        											</Style>
+        										</Thumb.Style>
+        									</Thumb>
+        								</Grid>
+        								<ControlTemplate.Triggers>
+        									<Trigger Property="SortDirection" Value="{x:Null}">
+        										<Setter Property="Background" TargetName="BackgroundBorder" Value="{DynamicResource WhiteColorBrush}"/>
+        									</Trigger>
+        									<MultiTrigger>
+        										<MultiTrigger.Conditions>
+        											<Condition Property="IsMouseOver" Value="True"/>
+        											<Condition Property="SortDirection" Value="{x:Null}"/>
+        										</MultiTrigger.Conditions>
+        										<Setter Property="Background" TargetName="BackgroundBorder" Value="{DynamicResource GrayBrush8}"/>
+        									</MultiTrigger>
+        									<Trigger Property="SortDirection" Value="Ascending">
+        										<Setter Property="Visibility" TargetName="SortArrow" Value="Visible"/>
+        										<Setter Property="Data" TargetName="SortArrow" Value="F1M34,57L42,57 42,32.25 52,42.25 52,31.75 38,17.75 24,31.75 24,42.25 34,32.25 34,57z"/>
+        									</Trigger>
+        									<Trigger Property="SortDirection" Value="Descending">
+        										<Setter Property="Visibility" TargetName="SortArrow" Value="Visible"/>
+        										<Setter Property="Data" TargetName="SortArrow" Value="F1M42,19.0002L34,19.0002 34,43.7502 24,33.7502 24,44.2502 38,58.2502 52,44.2502 52,33.7502 42,43.7502 42,19.0002z"/>
+        										<Setter Property="Margin" TargetName="SortArrow" Value="0,0,8,0"/>
+        									</Trigger>
+        									<Trigger Property="DisplayIndex" Value="0">
+        										<Setter Property="Visibility" TargetName="PART_LeftHeaderGripper" Value="Collapsed"/>
+        									</Trigger>
+        									<Trigger Property="IsEnabled" Value="False">
+        										<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+        									</Trigger>
+        								</ControlTemplate.Triggers>
+        							</ControlTemplate>
+        						</Setter.Value>
+        					</Setter>
+        					<Setter Property="ContentTemplate">
+        						<Setter.Value>
+        							<DataTemplate>
+        								<!--<TextBlock FontWeight="SemiBold" Text="{Binding Converter={Custom:ToUpperConverter}}"/>-->
+        								<TextBlock FontWeight="SemiBold" Text="{Binding}" TextWrapping="Wrap"/>
+        							</DataTemplate>
+        						</Setter.Value>
+        					</Setter>
+        				</Style>
+        			</Setter.Value>
+        		</Setter>
+        		<Setter Property="RowHeaderStyle">
+        			<Setter.Value>
+        				<Style TargetType="{x:Type DataGridRowHeader}">
+        					<Setter Property="Background" Value="Transparent"/>
+        					<Setter Property="BorderBrush" Value="{DynamicResource GrayBrush4}"/>
+        					<Setter Property="BorderThickness" Value="0,0,1,0"/>
+        					<Setter Property="Margin" Value="0"/>
+        					<Setter Property="Template">
+        						<Setter.Value>
+        							<ControlTemplate TargetType="{x:Type DataGridRowHeader}">
+        								<Grid>
+        									<Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Margin="{TemplateBinding Margin}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+        										<StackPanel Orientation="Horizontal">
+        											<ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center"/>
+        										</StackPanel>
+        									</Border>
+        									<Thumb x:Name="PART_TopHeaderGripper" Height="3" VerticalAlignment="Top">
+        										<Thumb.Style>
+        											<Style TargetType="{x:Type Thumb}">
+        												<Setter Property="Width" Value="8"/>
+        												<Setter Property="Background" Value="Transparent"/>
+        												<Setter Property="Cursor" Value="SizeNS"/>
+        												<Setter Property="Template">
+        													<Setter.Value>
+        														<ControlTemplate TargetType="{x:Type Thumb}">
+        															<Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True"/>
+        														</ControlTemplate>
+        													</Setter.Value>
+        												</Setter>
+        											</Style>
+        										</Thumb.Style>
+        									</Thumb>
+        									<Thumb x:Name="PART_BottomHeaderGripper" Height="3" VerticalAlignment="Bottom">
+        										<Thumb.Style>
+        											<Style TargetType="{x:Type Thumb}">
+        												<Setter Property="Width" Value="8"/>
+        												<Setter Property="Background" Value="Transparent"/>
+        												<Setter Property="Cursor" Value="SizeNS"/>
+        												<Setter Property="Template">
+        													<Setter.Value>
+        														<ControlTemplate TargetType="{x:Type Thumb}">
+        															<Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True"/>
+        														</ControlTemplate>
+        													</Setter.Value>
+        												</Setter>
+        											</Style>
+        										</Thumb.Style>
+        									</Thumb>
+        								</Grid>
+        								<ControlTemplate.Triggers>
+        									<Trigger Property="IsMouseOver" Value="True">
+        										<Setter Property="Background">
+        											<Setter.Value>
+        												<SolidColorBrush Color="{DynamicResource AccentColor3}"/>
+        											</Setter.Value>
+        										</Setter>
+        									</Trigger>
+        								</ControlTemplate.Triggers>
+        							</ControlTemplate>
+        						</Setter.Value>
+        					</Setter>
+        				</Style>
+        			</Setter.Value>
+        		</Setter>
+        		<Setter Property="CellStyle">
+        			<Setter.Value>
+        				<Style TargetType="{x:Type DataGridCell}">
+        					<!-- Removes dashed border 
+                            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>-->
+        					<Setter Property="Background" Value="Transparent"/>
+        					<Setter Property="BorderBrush" Value="Transparent"/>
+        					<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        					<Setter Property="VerticalAlignment" Value="Stretch"/>
+        					<Setter Property="VerticalContentAlignment" Value="Center"/>
+        					<Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type DataGridRow}}}"/>
+        					<Setter Property="Template">
+        						<Setter.Value>
+        							<ControlTemplate TargetType="{x:Type DataGridCell}">
+        								<Border BorderBrush="{TemplateBinding BorderBrush}"
+        									BorderThickness="{TemplateBinding BorderThickness}" 
+        									Background="{TemplateBinding Background}" 
+        									SnapsToDevicePixels="True">
+        									<!--<Border.Triggers>
+                                                <EventTrigger>
+                                                    <Validation.ErrorTemplate>
+                                                        <Validati
+                                                    </Validation.ErrorTemplate>
+                                                </EventTrigger>
+                                                <MultiTrigger>
+                                                    <MultiTrigger.Conditions>
+                                                        <Condition Property="IsMouseOver" Value="True"/>
+                                                       
+                                                    </MultiTrigger.Conditions>
+                                                </MultiTrigger>
+                                            </Border.Triggers> -->
+        									<ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" 
+        										Content="{TemplateBinding Content}" 
+        										ContentStringFormat="{TemplateBinding ContentStringFormat}" 
+        										HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+        										SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+        										VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                                
+        										<!--<ContentPresenter.Triggers>
+                                                    <Trigger Property="" Value="True">
+                                                        <Setter Property="BorderBrush" Value="Red" />
+                                                    </Trigger>
+                                                </ContentPresenter.Triggers>-->
+        									</ContentPresenter>
+        								</Border>
+        							</ControlTemplate>
+        						</Setter.Value>
+        					</Setter>
+        				</Style>
+        			</Setter.Value>
+        		</Setter>
+        		<Setter Property="RowStyle">
+        			<Setter.Value>
+        				<Style TargetType="{x:Type DataGridRow}">
+        					<Setter Property="MinHeight" Value="25"/>
+        					<Setter Property="Margin" Value="0"/>
+        					<Style.Triggers>
+        						<Trigger Property="IsSelected" Value="True">
+        							<Setter Property="Background" Value="{DynamicResource AccentColorBrush}"/>
+        							<Setter Property="Foreground" Value="{DynamicResource AccentSelectedColorBrush}"/>
+        						</Trigger>
+        						<Trigger Property="IsMouseOver" Value="True">
+        							<Setter Property="Background">
+        								<Setter.Value>
+        									<SolidColorBrush Color="{DynamicResource AccentColor3}"/>
+        								</Setter.Value>
+        							</Setter>
+        						</Trigger>
+        						<MultiTrigger>
+        							<MultiTrigger.Conditions>
+        								<Condition Property="IsSelected" Value="True"/>
+        								<Condition Property="Selector.IsSelectionActive" Value="True"/>
+        							</MultiTrigger.Conditions>
+        							<Setter Property="Background">
+        								<Setter.Value>
+        									<SolidColorBrush Color="{DynamicResource AccentColor2}"/>
+        								</Setter.Value>
+        							</Setter>
+        						</MultiTrigger>
+        						<Trigger Property="IsEnabled" Value="False">
+        							<Setter Property="Foreground" Value="{DynamicResource GrayBrush5}"/>
+        						</Trigger>
+        						<MultiTrigger>
+        							<MultiTrigger.Conditions>
+        								<Condition Property="IsEnabled" Value="False"/>
+        								<Condition Property="IsSelected" Value="True"/>
+        							</MultiTrigger.Conditions>
+        							<Setter Property="Background" Value="{DynamicResource GrayBrush5}"/>
+        							<Setter Property="Foreground" Value="{DynamicResource AccentSelectedColorBrush}"/>
+        						</MultiTrigger>
+        					</Style.Triggers>
+        				</Style>
+        			</Setter.Value>
+        		</Setter>
+        		<Setter Property="HeadersVisibility" Value="Column"/>
+        		<Setter Property="DropLocationIndicatorStyle">
+        			<Setter.Value>
+        				<Style TargetType="{x:Type Separator}">
+        					<Setter Property="Background" Value="{DynamicResource GrayBrush5}"/>
+        					<Setter Property="Width" Value="2"/>
+        					<Setter Property="Template">
+        						<Setter.Value>
+        							<ControlTemplate TargetType="{x:Type Separator}">
+        								<Rectangle Fill="{TemplateBinding Background}" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"/>
+        							</ControlTemplate>
+        						</Setter.Value>
+        					</Setter>
+        				</Style>
+        			</Setter.Value>
+        		</Setter>
+        		<Setter Property="Template">
+        			<Setter.Value>
+        				<ControlTemplate TargetType="{x:Type DataGrid}">
+        					<Border BorderBrush="{TemplateBinding BorderBrush}" 
+        						BorderThickness="{TemplateBinding BorderThickness}" 
+        						Background="{TemplateBinding Background}" 
+        						Padding="{TemplateBinding Padding}" 
+        						SnapsToDevicePixels="True">
+        						<ScrollViewer x:Name="DG_ScrollViewer" Focusable="False">
+        							<ScrollViewer.Template>
+        								<ControlTemplate TargetType="{x:Type ScrollViewer}">
+        									<Grid>
+        										<Grid.ColumnDefinitions>
+        											<ColumnDefinition Width="Auto"/>
+        											<ColumnDefinition Width="*"/>
+        											<ColumnDefinition Width="Auto"/>
+        										</Grid.ColumnDefinitions>
+        										<Grid.RowDefinitions>
+        											<RowDefinition Height="Auto"/>
+        											<RowDefinition Height="*"/>
+        											<RowDefinition Height="Auto"/>
+        										</Grid.RowDefinitions>
+        										<Button Command="ApplicationCommands.SelectAll" Focusable="False" Style="{DynamicResource {ComponentResourceKey ResourceId=MetroDataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}}" Width="{Binding CellsPanelHorizontalOffset, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type DataGrid}}}">
+        											<Button.Visibility>
+        												<Binding Path="HeadersVisibility" RelativeSource="{RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type DataGrid}}">
+        													<Binding.ConverterParameter>
+        														<DataGridHeadersVisibility>All</DataGridHeadersVisibility>
+        													</Binding.ConverterParameter>
+        												</Binding>
+        											</Button.Visibility>
+        										</Button>
+        										<DataGridColumnHeadersPresenter x:Name="PART_ColumnHeadersPresenter" Grid.Column="1">
+        											<DataGridColumnHeadersPresenter.Visibility>
+        												<Binding Path="HeadersVisibility" RelativeSource="{RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type DataGrid}}">
+        													<Binding.ConverterParameter>
+        														<DataGridHeadersVisibility>Column</DataGridHeadersVisibility>
+        													</Binding.ConverterParameter>
+        												</Binding>
+        											</DataGridColumnHeadersPresenter.Visibility>
+        										</DataGridColumnHeadersPresenter>
+        										<Grid Grid.ColumnSpan="2" Grid.Row="1">
+        											<ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" CanHorizontallyScroll="False" Grid.ColumnSpan="2" CanVerticallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" Grid.Row="1"/>
+        										</Grid>
+        										<ScrollBar x:Name="PART_VerticalScrollBar" Grid.Column="2" Maximum="{TemplateBinding ScrollableHeight}" Orientation="Vertical" Grid.Row="1" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}"/>
+        										<Grid Grid.Column="1" Grid.Row="2">
+        											<Grid.ColumnDefinitions>
+        												<ColumnDefinition Width="{Binding NonFrozenColumnsViewportHorizontalOffset, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type DataGrid}}}"/>
+        												<ColumnDefinition Width="*"/>
+        											</Grid.ColumnDefinitions>
+        											<ScrollBar x:Name="PART_HorizontalScrollBar" Grid.Column="1" Maximum="{TemplateBinding ScrollableWidth}" Orientation="Horizontal" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}"/>
+        										</Grid>
+        									</Grid>
+        								</ControlTemplate>
+        							</ScrollViewer.Template>
+        							<ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+        						</ScrollViewer>
+        					</Border>
+        				</ControlTemplate>
+        			</Setter.Value>
+        		</Setter>
+        		<Style.Triggers>
+        			<Trigger Property="IsGrouping" Value="True">
+        				<Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+        			</Trigger>
+        		</Style.Triggers>
+        	</Style>
+             
+        </ResourceDictionary>
+
+    </UserControl.Resources>
+
+
+
+	<UserControl.DataContext>
+		<Binding Path="RouteVM" Source="{StaticResource Locator}"/>
+	</UserControl.DataContext>
+
+
+
+	<Grid x:Name="LayoutRoot">
+		<DockPanel LastChildFill="True">
+			<Grid DockPanel.Dock="Top">
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="6*"/>
+					<ColumnDefinition Width="0.25*"/>
+					<ColumnDefinition Width="13*"/>
+					<ColumnDefinition Width="31"/>
+				</Grid.ColumnDefinitions>
+                
+				<Grid.RowDefinitions>
+					<RowDefinition Height="24"/>
+					<RowDefinition Height="118"/>
+					<RowDefinition Height="10"/>
+                                   
+				</Grid.RowDefinitions>
+                
+				<StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
+					<Grid>
+						<Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="30"/>
+							<ColumnDefinition Width="120"/>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="60"/>
+           
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="22"/>
+							<RowDefinition Height="30"/>
+							<RowDefinition Height="30"/>
+							<RowDefinition Height="8"/>
+							<RowDefinition Height="26"/>
+                            <RowDefinition Height="26"/>
+
+						</Grid.RowDefinitions>
+
+						<!--<TextBlock Grid.Row="1" Grid.Column="1" Text="Port name"  HorizontalAlignment="Left" VerticalAlignment="Bottom"/>-->
+						<TextBlock Grid.Row="0" Grid.Column="3" Text="Time zone" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="4,0,0,0"/>
+						<TextBlock Grid.Row="1" Grid.Column="1" Text="Departure port:" Margin="5" HorizontalAlignment="Right"/>
+                        <TextBox x:Name="routeFromTextBox" Text="{Binding DeparturePort}" Grid.Row="1" Grid.Column="2" Margin="0,2" Style="{StaticResource TextBoxStyle}"
+							MouseDoubleClick="SelectText" GotKeyboardFocus="SelectText" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton"/>
+						<TextBlock Grid.Row="2" Grid.Column="1" Text="Arrival port:" Margin="5" HorizontalAlignment="Right"/>
+                        <TextBox x:Name="routeToTextBox" Text="{Binding ArrivalPort}" Grid.Row="2" Grid.Column="2" Margin="0,2" Style="{StaticResource TextBoxStyle}"
+							MouseDoubleClick="SelectText" GotKeyboardFocus="SelectText" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton"/>
+
+                        <TextBox x:Name="timeZoneDeparture" Grid.Row="1" Grid.Column="3" Margin="4,2,2,2" Padding="10,0"
+							MouseDoubleClick="SelectText" GotKeyboardFocus="SelectText" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton" Style="{StaticResource TextBoxStyle}">
+                            <Binding Path="TimeZoneDeparture" ValidatesOnDataErrors="True" 
+                                     Converter="{StaticResource numberOfDecimalsWhenNeededConverter}" ConverterParameter="2" UpdateSourceTrigger="LostFocus">
+                                <Binding.ValidationRules>
+                                    <local:TimeZoneRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+
+                        <TextBox x:Name="timeZoneArrival" Grid.Row="2" Grid.Column="3" Margin="4,2,2,2" Padding="10,0"
+							MouseDoubleClick="SelectText" GotKeyboardFocus="SelectText" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton" Style="{StaticResource TextBoxStyle}">
+                            <Binding Path="TimeZoneArrival" ValidatesOnDataErrors="True" 
+                                     Converter="{StaticResource numberOfDecimalsWhenNeededConverter}" ConverterParameter="2" UpdateSourceTrigger="LostFocus">
+                                <Binding.ValidationRules>
+                                    <local:TimeZoneRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+
+                        <TextBlock Grid.Row="4" Grid.Column="1" Text="Start of Sea passage:" Margin="5" HorizontalAlignment="Right"/>
+                        <TextBlock Grid.Row="5" Grid.Column="1" Text="End of Sea passage:" Margin="5" HorizontalAlignment="Right"/>
+
+                        <ComboBox x:Name="cbSosp" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" 
+                            IsEnabled="{Binding NoOfWaypoints, Mode=OneWay, Converter={StaticResource waypointsExistConverter}}"
+                            ItemsSource="{Binding Path=Waypoints, Mode=OneWay}"
+                            DisplayMemberPath="WaypointNoAndName" 
+                            SelectedValue="{Binding SelectedSospWaypoint, Mode=TwoWay}" 
+                            Margin="0,2,2,2" MinHeight="18"
+                            IsReadOnly="True" IsEditable="False" />
+
+                        <ComboBox x:Name="cbEosp" Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2"
+                            IsEnabled="{Binding NoOfWaypoints, Mode=OneWay, Converter={StaticResource waypointsExistConverter}}"
+                            ItemsSource="{Binding Path=Waypoints, Mode=OneWay}"
+                            DisplayMemberPath="WaypointNoAndName" 
+                            SelectedValue="{Binding SelectedEospWaypoint, Mode=TwoWay}" 
+                            Margin="0,2,2,2" MinHeight="18"
+                            IsReadOnly="True" IsEditable="False" />
+
+                    </Grid>
+				</StackPanel>
+				<TextBlock Text="Passage data" Grid.Row="0" Grid.Column="2" VerticalAlignment="Bottom" Margin="1,2,2,2"/>
+				<StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="2">
+
+					<!--<Grid Background="#44666666">-->
+					<Grid Background="#33666666">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="90"/>
+							<ColumnDefinition Width="116"/>
+							<ColumnDefinition Width="75"/>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="100"/>
+							<ColumnDefinition Width="48"/>
+							<ColumnDefinition Width="48"/>
+							<ColumnDefinition Width="48"/>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="78"/>
+							<ColumnDefinition Width="0.5*"/>
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="22"/>
+							<RowDefinition Height="18"/>
+							<RowDefinition Height="30"/>
+							<RowDefinition Height="30"/>
+							<RowDefinition Height="17"/>
+						</Grid.RowDefinitions>
+
+						<TextBlock Grid.Column="0" Grid.Row="2" Text="Dep. time (LT):" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="4"/>
+						<TextBlock Grid.Column="0" Grid.Row="3" Text="Arr. time (LT):" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="4"/>
+                            
+						<TextBlock Grid.Column="1" Grid.Row="1" Text="Date" VerticalAlignment="Bottom"/>
+						<TextBlock Grid.Column="2" Grid.Row="1" Text="Time" VerticalAlignment="Bottom" Margin="4,0,0,0"/>
+
+						<!--<DatePicker Grid.Column="1" Grid.Row="2" x:Name="datePickerDepartureTimeDateLocal" VerticalAlignment="Center" CalendarOpened="DatePicker_CalendarOpened"
+							Text="{Binding DepartureTimeDateLocal, Converter={StaticResource dateConverter}, ConverterCulture={x:Static Globalization:CultureInfo.CurrentCulture}, UpdateSourceTrigger=LostFocus, Mode=TwoWay, StringFormat=\{0:d\}}"/>-->
+
+                        <!--Converter="{StaticResource dateConverter}" ConverterCulture="{x:Static Globalization:CultureInfo.CurrentCulture}" UpdateSourceTrigger="LostFocus"
+                                     Mode="TwoWay" StringFormat="{}{0:d}"-->
+
+                        <!--<DatePicker Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" CalendarOpened="DatePicker_CalendarOpened"
+							MouseDoubleClick="SelectText" GotKeyboardFocus="SelectText" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton" Style="{StaticResource DatePickerStyle}">
+                            <DatePicker.Text>
+                                <Binding Path="DepartureTimeDateLocal" ValidatesOnDataErrors="True" 
+                                     Converter="{StaticResource dateConverter}" ConverterCulture="{x:Static Globalization:CultureInfo.CurrentCulture}"
+                                     UpdateSourceTrigger="LostFocus"
+                                     Mode="TwoWay" StringFormat="{}{0:d}">
+                                    <Binding.ValidationRules>
+                                        <local:DateRule/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </DatePicker.Text>
+                        </DatePicker>-->
+
+                        <DatePicker Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" CalendarOpened="DatePicker_CalendarOpened" Style="{StaticResource DatePickerStyle}">
+                            <DatePicker.Text>
+                                <Binding Path="DepartureTimeDateLocal" ValidatesOnDataErrors="True" 
+                                     Converter="{StaticResource dateConverter}" ConverterCulture="{x:Static Globalization:CultureInfo.CurrentCulture}"
+                                     UpdateSourceTrigger="LostFocus"
+                                     Mode="TwoWay">
+                                    <Binding.ValidationRules>
+                                        <local:DateRule/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </DatePicker.Text>
+                            <DatePicker.Resources>
+                                <Style TargetType="DatePickerTextBox" BasedOn="{StaticResource MetroDatePickerTextBox}">
+                                    <Setter Property="SelectionBrush" Value="#AA119EDA"/>
+                                    <Setter Property="Padding" Value="1,1.5,0,0"/>
+                                    <EventSetter Event="MouseDoubleClick" Handler="SelectText"/>
+                                    <EventSetter Event="GotKeyboardFocus" Handler="SelectText"/>
+                                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="SelectivelyIgnoreMouseButton"/>
+                                </Style>
+                            </DatePicker.Resources>
+                        </DatePicker>
+
+                       
+                        <!--<DatePicker Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" 
+							Text="{Binding DepartureTimeDateLocal, ConverterCulture={x:Static Globalization:CultureInfo.CurrentCulture}, Mode=TwoWay, StringFormat=\{0:d\}}"/>-->
+                        
+						<!--<TextBox Grid.Column="2" Grid.Row="2" TextAlignment="Center" 
+							Text="{Binding DepartureTimeHoursMinutesLocal, ConverterCulture={x:Static Globalization:CultureInfo.CurrentCulture}, Mode=TwoWay, StringFormat=\{0:t\}}" Margin="5,2"
+							MouseDoubleClick="SelectText" GotKeyboardFocus="SelectText" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton"/>-->
+
+                        <TextBox Grid.Column="2" Grid.Row="2" TextAlignment="Center" Margin="4,2"
+							MouseDoubleClick="SelectText" GotKeyboardFocus="SelectText" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton" Style="{StaticResource TextBoxStyle}">
+                            <Binding Path="DepartureTimeHoursMinutesLocal" ValidatesOnDataErrors="True" ConverterCulture="{x:Static Globalization:CultureInfo.CurrentCulture}"
+                                     UpdateSourceTrigger="LostFocus" Mode="TwoWay" StringFormat="{}{0:t}">
+                                <Binding.ValidationRules>
+                                    <local:TimeRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+
+                        <!--<TextBox Grid.Column="1" Grid.Row="3" TextAlignment="Center" Background="#F0F0F0"
+							Text="{Binding ArrivalTimeLocal, ConverterCulture={x:Static Globalization:CultureInfo.CurrentCulture}, Mode=TwoWay, StringFormat=\{0:g\}}"
+							IsReadOnly="True" Margin="0,2,5,2" Focusable="False"
+							Grid.ColumnSpan="2"/>-->
+
+						<TextBlock Grid.Column="1" Grid.Row="3" TextAlignment="Center" Background="#F0F0F0"
+							Text="{Binding ArrivalTimeLocal, ConverterCulture={x:Static Globalization:CultureInfo.CurrentCulture}, Mode=TwoWay, StringFormat=\{0:g\}}"
+							Margin="1,3,5,3" Focusable="False" Padding="0,4,0,0"
+							Grid.ColumnSpan="2"/>
+
+						<TextBlock Grid.Column="4" Grid.Row="2" Text="Dep. draught [m]:" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="4"/>
+						<TextBlock Grid.Column="4" Grid.Row="3" Text="Arr. draught [m]:" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="4"/>
+
+						<TextBlock Grid.Column="5" Grid.Row="1" Text="Fore" VerticalAlignment="Bottom"/>
+						<TextBlock Grid.Column="6" Grid.Row="1" Text="Aft" VerticalAlignment="Bottom"/>
+						<TextBlock Grid.Column="7" Grid.Row="1" Text="Air" VerticalAlignment="Bottom"/>
+
+                        <TextBox Grid.Column="5" Grid.Row="2" Margin="0,2,5,2" TextAlignment="Center" 
+							MouseDoubleClick="SelectText" GotKeyboardFocus="SelectText" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton" Style="{StaticResource TextBoxStyle}">
+                            <Binding Path="DraughtDepartureFore" ValidatesOnDataErrors="True" 
+                                     Converter="{StaticResource numberOfDecimalsWhenNeededConverter}" ConverterParameter="2" UpdateSourceTrigger="LostFocus"
+                                     Mode="TwoWay" StringFormat="{}{0:F2}">
+                                <Binding.ValidationRules>
+                                    <local:DraughtRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                       
+                        <TextBox Grid.Column="6" Grid.Row="2" Margin="0,2,5,2" TextAlignment="Center"
+							MouseDoubleClick="SelectText" GotKeyboardFocus="SelectText" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton" Style="{StaticResource TextBoxStyle}">
+                            <Binding Path="DraughtDepartureAft" ValidatesOnDataErrors="True" 
+                                     Converter="{StaticResource numberOfDecimalsWhenNeededConverter}" ConverterParameter="2" UpdateSourceTrigger="LostFocus"
+                                     Mode="TwoWay" StringFormat="{}{0:F2}">
+                                <Binding.ValidationRules>
+                                    <local:DraughtRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                  
+                        <TextBox Grid.Column="7" Grid.Row="2" Margin="0,2,5,2" TextAlignment="Center"
+							MouseDoubleClick="SelectText" GotKeyboardFocus="SelectText" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton" Style="{StaticResource TextBoxStyle}">
+                            <Binding Path="DraughtDepartureAir" ValidatesOnDataErrors="True" 
+                                     Converter="{StaticResource numberOfDecimalsWhenNeededConverter}" ConverterParameter="2" UpdateSourceTrigger="LostFocus"
+                                     Mode="TwoWay" StringFormat="{}{0:F2}">
+                                <Binding.ValidationRules>
+                                    <local:AirDraughtRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                        
+                        <TextBox Grid.Column="5" Grid.Row="3" Margin="0,2,5,2" TextAlignment="Center"
+							MouseDoubleClick="SelectText" GotKeyboardFocus="SelectText" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton" Style="{StaticResource TextBoxStyle}">
+                            <Binding Path="DraughtArrivalFore" ValidatesOnDataErrors="True" 
+                                     Converter="{StaticResource numberOfDecimalsWhenNeededConverter}" ConverterParameter="2" UpdateSourceTrigger="LostFocus"
+                                     Mode="TwoWay" StringFormat="{}{0:F2}">
+                                <Binding.ValidationRules>
+                                    <local:DraughtRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                        
+                        <TextBox Grid.Column="6" Grid.Row="3" Margin="0,2,5,2" TextAlignment="Center"
+							MouseDoubleClick="SelectText" GotKeyboardFocus="SelectText" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton" Style="{StaticResource TextBoxStyle}">
+                            <Binding Path="DraughtArrivalAft" ValidatesOnDataErrors="True" 
+                                     Converter="{StaticResource numberOfDecimalsWhenNeededConverter}" ConverterParameter="2" UpdateSourceTrigger="LostFocus"
+                                     Mode="TwoWay" StringFormat="{}{0:F2}">
+                                <Binding.ValidationRules>
+                                    <local:DraughtRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                        
+                        <TextBox Grid.Column="7" Grid.Row="3" Margin="0,2,5,2" TextAlignment="Center"
+							MouseDoubleClick="SelectText" GotKeyboardFocus="SelectText" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton" Style="{StaticResource TextBoxStyle}">
+                            <Binding Path="DraughtArrivalAir" ValidatesOnDataErrors="True" 
+                                     Converter="{StaticResource numberOfDecimalsWhenNeededConverter}" ConverterParameter="2" UpdateSourceTrigger="LostFocus"
+                                     Mode="TwoWay" StringFormat="{}{0:F2}">
+                                <Binding.ValidationRules>
+                                    <local:AirDraughtRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                        
+						<TextBlock  Grid.Row="2" Grid.Column="9" Text="Passage data" VerticalAlignment="Bottom"/>
+						<Button Content="Clear" Focusable="false" Command="{Binding ClearPassageDataCommand}" ToolTip="Clears all Passage Data" Grid.Row="3" Grid.Column="9" Width="65"  Height="24"  HorizontalAlignment="Left"/>
+						<!--<Button Content="Save" ToolTip="Saves all Passage Data, including Passage specific texts in the Passage Plan report" Grid.Row="3" Grid.Column="9" Width="65"  Height="24"  HorizontalAlignment="Left"/>-->
+
+						<!--<TextBlock Grid.Row="2" Grid.Column="0" Text="No of waypoints: " Margin="5" HorizontalAlignment="Left"/>
+                            <TextBox x:Name="noOfWaypointsTextBox" Text="{Binding NoOfWaypoints, Mode=OneWay}" IsReadOnly="True" Grid.Row="2" Grid.Column="1" Margin="5,2" />-->
+                       
+					</Grid>
+					<!--</Border>-->
+				</StackPanel>
+
+				<!--<Button x:Name="buttonOpenRoute" Grid.Column="2" Content="Open Route" Width="80" Height="24" IsDefault="True" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,50,5" Click="buttonOpenRoute_Click"/>-->
+			</Grid>
+			<Grid DockPanel.Dock="Bottom">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="70"/>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="3*"/>
+					<ColumnDefinition Width="2*"/>
+					<ColumnDefinition Width="150"/>
+				</Grid.ColumnDefinitions>
+				
+				<Button x:Name="buttonAppend" Grid.Column="0" Content="Append" Width="70" Height="24" IsDefault="True" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="40,10,40,10" Command="{Binding AppendRouteCommand}" ToolTip="Adds waypoints from a .ppf file or an Ecdis file, and puts them after the last waypoint in the grid."/>
+
+				<TextBlock x:Name="StatusText" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="9" Text="{Binding StatusBarText, NotifyOnTargetUpdated=True}" VerticalAlignment="Bottom" HorizontalAlignment="Center" FontSize="14" TextAlignment="Center" Height="28" Width="400" Margin="17.5">
+					<TextBlock.Triggers>
+						<EventTrigger RoutedEvent="Binding.TargetUpdated">
+							<BeginStoryboard>
+								<Storyboard>
+									<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity">
+										<EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+										<EasingDoubleKeyFrame KeyTime="0:0:0.6" Value="1"/>
+										<EasingDoubleKeyFrame KeyTime="0:0:2" Value="1"/>
+										<EasingDoubleKeyFrame KeyTime="0:0:8" Value="0"/>
+									</DoubleAnimationUsingKeyFrames>
+								</Storyboard>
+							</BeginStoryboard>
+						</EventTrigger>
+					</TextBlock.Triggers>
+				</TextBlock>
+                
+				<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+					<TextBlock Text="No of waypoints: " Margin="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                  
+					<TextBlock x:Name="noOfWaypointsTextBox" Text="{Binding NoOfWaypoints, Mode=OneWay}" Background="#F0F0F0"  Padding="0,4,0,0" 
+						TextAlignment="Center" VerticalAlignment="Center" Height="24" Width="46" Margin="2"/>
+                   
+				</StackPanel>
+
+				<Button x:Name="buttonSaveRoute" Command="{Binding SaveRouteCommand}" Grid.Column="2" Content="Save" Width="65" Height="24" IsDefault="True" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,10,40,10" ToolTip="Saves all Route data and Passage data to a .ppf file."/>
+			</Grid>
+      
+			<Grid DockPanel.Dock="Left">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="30"/>
+				</Grid.ColumnDefinitions>
+			</Grid>
+			<Grid DockPanel.Dock="Right">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="30"/>
+				</Grid.ColumnDefinitions>
+			</Grid>
+			<Grid>
+               
+				<Border BorderBrush="LightGray" BorderThickness="2">
+                  
+					<DataGrid x:Name="dataGridWaypoints" ItemsSource="{Binding Waypoints, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+						SelectedItem="{Binding SelectedItemInGrid, Mode=TwoWay, Converter={StaticResource waypointsIsItemSourceConverter}}" SelectionChanged="dataGridWaypoints_SelectionChanged"
+						AutoGenerateColumns="False" FrozenColumnCount="4" CanUserSortColumns="False"
+						CanUserAddRows="True" CanUserResizeRows="False" ScrollViewer.CanContentScroll="False" CurrentCellChanged="dataGridWaypoints_CurrentCellChanged"
+						CanUserDeleteRows="True" CellEditEnding="dataGridWaypoints_CellEditEnding" BeginningEdit="dataGridWaypoints_BeginningEdit" 
+                        KeyDown="dataGridWaypoints_KeyDown" Style="{DynamicResource PassagePlannerDataGridStyle}" PreviewKeyDown="dataGridWaypoints_KeyDown">
+                        <!--KeyboardNavigation.TabNavigation="Once">-->
+                        <!--VirtualizingPanel is supported from .Net framework 4.5, and is therefore removed today 2013-10-22 when going back to 4.0 to support Win XP.
+                                VirtualizingPanel.IsVirtualizing="True">-->
+
+
+						<!--<EventTrigger x:Name="SelectionChanged"
+                        <DataGrid.Triggers>
+                            <EventTrigger EventName="SelectionChanged">
+                                <InvokeCommandAction Command="{Binding SelectionChanged}" CommandParameter="{Binding SelectedItems,ElementName=dataGrid}">
+                                </InvokeCommandAction>
+                            </EventTrigger>
+                        </DataGrid.Triggers>-->
+
+                        
+
+                        <DataGrid.Resources>
+
+							<Style x:Key="MyDataGridTextBoxStyle" TargetType="{x:Type TextBox}">
+                                <!--This handling of focus will help to select all text in the text box when navigating with arrow keys in the grid.-->
+                                <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+                                
+                                <Setter Property="SelectionBrush" Value="#AA119EDA"/>
+								<Setter Property="BorderThickness" Value="0"/>
+                                
+                                <!--Here is the error template which will put a red frame around the text box when validation error, and also put a red "hint" popup at the right.-->
+								<Setter Property="Validation.ErrorTemplate">
+									<Setter.Value>
+										<ControlTemplate >
+											<DockPanel>
+												<Popup IsOpen="True" PlacementTarget="{Binding ElementName=ErrorControl}"
+													Placement="Right"          
+													HorizontalOffset="6"        
+                                                       VerticalOffset="-4"
+													PopupAnimation="Fade"    
+													AllowsTransparency="False">
+                                                    <Grid Background="#FFE02010">            
+														<TextBlock Margin="4,4,4,2"
+															Text="{Binding AdornedElement.(Validation.Errors)[0].ErrorContent, ElementName=ErrorControl}"
+															Height="18" Width="Auto" VerticalAlignment="Center"
+															Foreground="White" Background="#FFE02010"/>
+													</Grid>
+												</Popup>
+                                                <Border BorderBrush="#FFE02010" BorderThickness="2">
+													<AdornedElementPlaceholder x:Name="ErrorControl"/>
+												</Border>
+											</DockPanel>
+										</ControlTemplate>
+                                    </Setter.Value>
+								</Setter>
+							</Style>
+
+                            <Style x:Key="MyDataGridTextBoxStyleLimitedTextLength" TargetType="{x:Type TextBox}">
+                                <!--This handling of focus will help to select all text in the text box when navigating with arrow keys in the grid.-->
+                                <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+
+                                <Setter Property="SelectionBrush" Value="#AA119EDA"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+
+                                <!-- Limit text length on column Remarks so text will fit in the textbox in the Passage Plan report named Remarks -->
+                                <Setter Property="MaxLength" Value="50"/>
+                                
+                            </Style>
+                                
+
+                            <!--Produces a line at the right of the frozen columns-->
+                            <Style x:Key="RightBorderCell" TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource MetroDataGridCell}">
+								<Setter Property="BorderThickness" Value="0,0,1,0"/>
+								<Setter Property="BorderBrush" Value="LightGray"/>
+							</Style>
+
+                        
+						</DataGrid.Resources>
+        
+                        <DataGrid.Columns>
+                                                        
+                            <DataGridTextColumn Header="WP No" IsReadOnly="True" Width="42" Binding="{Binding WaypointNo, UpdateSourceTrigger=Explicit}">
+								<!--<DataGridTextColumn.CellStyle>
+                                    <Style>
+                                        <Setter Property="FrameworkElement.HorizontalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>-->
+							</DataGridTextColumn>
+                            
+							<DataGridTextColumn Header="WP Name" Binding="{Binding WaypointName, UpdateSourceTrigger=Explicit}"
+                                                EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}"/>
+
+                            <DataGridTextColumn Header="Latitude" Width="80" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}">
+								<DataGridTextColumn.Binding>
+									<Binding Path="Latitude" ValidatesOnDataErrors="True" ConverterParameter="Latitude" Converter="{StaticResource positionConverter}" Mode="TwoWay" UpdateSourceTrigger="LostFocus">
+										<Binding.ValidationRules>
+											<local:LatitudeRule />
+										</Binding.ValidationRules>
+									</Binding>                       
+								</DataGridTextColumn.Binding>
+							</DataGridTextColumn>
+
+                            <DataGridTextColumn Header="Longitude" Width="90" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}" CellStyle="{StaticResource RightBorderCell}">
+								<DataGridTextColumn.Binding>
+									<Binding Path="Longitude" ValidatesOnDataErrors="True" ConverterParameter="Longitude" Converter="{StaticResource positionConverter}" Mode="TwoWay" UpdateSourceTrigger="LostFocus">
+										<Binding.ValidationRules>
+											<local:LongitudeRule />
+										</Binding.ValidationRules>
+									</Binding>
+								</DataGridTextColumn.Binding>
+							</DataGridTextColumn>  
+                            
+                            <DataGridComboBoxColumn Header="Leg type to next WP" Width="90" ItemsSource="{Binding Source={StaticResource legTypes}}" 
+								SelectedItemBinding="{Binding LegType, Mode=TwoWay, Converter={StaticResource legTypeConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+
+                            <DataGridTextColumn Header="True course to next WP [deg]" Width="105" IsReadOnly="True" Binding="{Binding CourseToNextWaypoint, Converter={StaticResource decimalConverter}, Mode=OneWay, StringFormat=\{0:D3\}, UpdateSourceTrigger=LostFocus}"/>
+                            
+							<DataGridTextColumn Header="Distance to next WP [NM]" Width="100" Binding="{Binding DistanceToNextWaypoint, ConverterParameter=1, Converter={StaticResource numberOfDecimalsConverter}, Mode=OneWay, UpdateSourceTrigger=LostFocus}"/>
+
+                            <DataGridTextColumn x:Name="speedColumn" Header="Speed to next WP [knots]"  Width="100" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}">
+                                <DataGridTextColumn.Binding>
+                                    <Binding Path="LegSpeedSetting" ValidatesOnDataErrors="True" Converter="{StaticResource numberOfDecimalsWhenNeededConverter}" ConverterParameter="2" Mode="TwoWay" UpdateSourceTrigger="LostFocus">
+                                        <Binding.ValidationRules>
+                                            <local:SpeedRule />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </DataGridTextColumn.Binding>
+                            </DataGridTextColumn>
+
+							<DataGridTextColumn Header="WP ETA (UTC)" IsReadOnly="True" Width="120" 
+								Binding="{Binding ETD, ConverterCulture={x:Static Globalization:CultureInfo.CurrentCulture}, Mode=OneWay, StringFormat=\{0:g\}, UpdateSourceTrigger=LostFocus}"/>
+
+                            <DataGridTextColumn Header="Remarks" Binding="{Binding Remarks}" EditingElementStyle="{StaticResource MyDataGridTextBoxStyleLimitedTextLength}"/>
+
+                            <DataGridTextColumn Header="Min Depth [m]" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}">
+                                <DataGridTextColumn.Binding>
+                                    <Binding Path="MinDepth" ValidatesOnDataErrors="True" Converter="{StaticResource decimalConverter}" Mode="TwoWay" StringFormat="{}{0:F1}" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <local:WaterDepthRule />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </DataGridTextColumn.Binding>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Header="Charts" Binding="{Binding Charts}">
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+                                        <Setter Property="SelectionBrush" Value="#AA119EDA"/>
+                                        <Setter Property="MaxLength" Value="50"/>
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Leg reference: Object" Binding="{Binding LegReferenceObject_Object}" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}"/>
+                            <DataGridTextColumn Header="Leg reference: Bearing [deg]" Width="100"  Binding="{Binding LegReferenceObject_Bearing}" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}"/>
+                            <DataGridTextColumn Header="Leg reference: Distance [NM]" Width="105"  Binding="{Binding LegReferenceObject_Distance}" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}"/>
+                            
+                            <DataGridTextColumn Header="Turn Radius [NM]" Width="90" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}">
+                                <DataGridTextColumn.Binding>
+                                    <Binding Path="TurnRadius" ValidatesOnDataErrors="True" Converter="{StaticResource decimalConverter}" Mode="TwoWay" StringFormat="{}{0:F1}" UpdateSourceTrigger="LostFocus">
+                                        <Binding.ValidationRules>
+                                            <local:SpeedRule />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </DataGridTextColumn.Binding>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Header="Turn Rate [deg/min]" Width="80" Binding="{Binding TurnRate}" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}"/>
+                            <DataGridTextColumn Header="Landmark at course alteration: Object" Width="140" Binding="{Binding LandmarkAtCourseAlt_Object}" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}"/>
+                            <DataGridTextColumn Header="Landmark at course alteration: Bearing [deg]" Width="160" Binding="{Binding LandmarkAtCourseAlt_Bearing}" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}"/>
+                            <DataGridTextColumn Header="Landmark at course alteration: Distance [NM]" Width="160" Binding="{Binding LandmarkAtCourseAlt_Distance}" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}"/>
+                            <DataGridTextColumn Header="Max Off Track" Binding="{Binding MaxOffTrack}" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}"/>
+                            <DataGridTextColumn Header="Max Int Pos Fix" Binding="{Binding MaxIntervalsPosFix}" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}"/>
+                            <DataGridTextColumn Header="Engine Status" Binding="{Binding EngineStatus}" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}"/>
+                            <DataGridTextColumn Header="Nav Watch Level" Binding="{Binding NavWatchLevel}" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}"/>
+                            <DataGridTextColumn Header="Pos Fix Method" Binding="{Binding PosFixMethod}" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}"/>
+                            <DataGridTextColumn Header="List of lights: Volume" Width="100" Binding="{Binding ListOfLights_Volume}">
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+                                        <Setter Property="SelectionBrush" Value="#AA119EDA"/>
+                                        <Setter Property="MaxLength" Value="26"/>
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="List of lights: Page" Width="100" Binding="{Binding ListOfLights_Page}">
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+                                        <Setter Property="SelectionBrush" Value="#AA119EDA"/>
+                                        <Setter Property="MaxLength" Value="16"/>
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="List of radio signals: Volume" Width="110" Binding="{Binding ListOfRadioSignals_Volume}">
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+                                        <Setter Property="SelectionBrush" Value="#AA119EDA"/>
+                                        <Setter Property="MaxLength" Value="26"/>
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="List of radio signals: Page" Width="100" Binding="{Binding ListOfRadioSignals_Page}">
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+                                        <Setter Property="SelectionBrush" Value="#AA119EDA"/>
+                                        <Setter Property="MaxLength" Value="16"/>
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Sailing directions: Volume" Width="120" Binding="{Binding SailingDirections_Volume}">
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+                                        <Setter Property="SelectionBrush" Value="#AA119EDA"/>
+                                        <Setter Property="MaxLength" Value="26"/>
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Sailing directions: Page" Width="110" Binding="{Binding SailingDirections_Page}">
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+                                        <Setter Property="SelectionBrush" Value="#AA119EDA"/>
+                                        <Setter Property="MaxLength" Value="16"/>
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Navtex Channels" Binding="{Binding NavtexChannels}">
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+                                        <Setter Property="SelectionBrush" Value="#AA119EDA"/>
+                                        <Setter Property="MaxLength" Value="24"/>
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Report To:" Binding="{Binding ReportTo}">
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+                                        <Setter Property="SelectionBrush" Value="#AA119EDA"/>
+                                        <Setter Property="MaxLength" Value="55"/>
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Channel/ Tel. No" Binding="{Binding ChannelOrTelephoneNo}">
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <EventSetter Event="GotFocus" Handler="TextBox_GotFocus"/>
+                                        <Setter Property="SelectionBrush" Value="#AA119EDA"/>
+                                        <Setter Property="MaxLength" Value="45"/>
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Actual Passing Time" Binding="{Binding ActualPassingTime}" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}"/>
+                            <DataGridTextColumn Header="Security Level" Binding="{Binding SecurityLevel}" EditingElementStyle="{StaticResource MyDataGridTextBoxStyle}"/>
+
+			                           
+						</DataGrid.Columns>
+                       
+						<DataGrid.RowStyle>
+							<Style TargetType="{x:Type DataGridRow}" BasedOn="{StaticResource MetroDataGridRow}">
+								<Style.Triggers>
+									<MultiTrigger>
+										<MultiTrigger.Conditions>
+											<Condition Property="IsMouseOver" Value="True" />
+											<Condition Property="IsSelected" Value="False" />
+										</MultiTrigger.Conditions>
+										<Setter Property="Background" Value="#33119EDA"/>
+									</MultiTrigger>
+								</Style.Triggers>
+							</Style>
+						</DataGrid.RowStyle>
+
+                        <DataGrid.ContextMenu>
+                            <ContextMenu Opened="ContextMenu_Opened">
+								<MenuItem Header="Copy waypoint(s)     Ctrl+C" 
+									Command="{Binding CopyWaypointCommand}" FontSize="12"/>
+                                <MenuItem x:Name="menuItemInsertWaypointBefore" Header="Insert copied waypoint(s) BEFORE this" 
+									Command="{Binding InsertCopiedWaypointBeforeCommand}" FontSize="12"/>
+                                <MenuItem x:Name="menuItemInsertWaypointAfter" Header="Insert copied waypoint(s) AFTER this     Ctrl+V" 
+									Command="{Binding InsertCopiedWaypointAfterCommand}" FontSize="12"/>
+								<MenuItem Header="Insert new waypoint BEFORE this" 
+									Command="{Binding InsertNewWaypointBeforeCommand}" FontSize="12"/>
+								<MenuItem Header="Insert new waypoint AFTER this" 
+									Command="{Binding InsertNewWaypointAfterCommand}" FontSize="12"/>
+								<MenuItem Header="Delete waypoint(s)..." 
+									Command="{Binding DeleteWaypointCommand}" FontSize="12"/>
+							</ContextMenu>
+						</DataGrid.ContextMenu>
+
+						<DataGrid.InputBindings>
+							<KeyBinding Key="Delete" Command="{Binding DeleteWaypointCommand}" />
+							<KeyBinding Key="C" Modifiers="Ctrl" Command="{Binding CopyWaypointCommand}"/>
+							<KeyBinding Key="V" Modifiers="Ctrl" Command="{Binding InsertCopiedWaypointAfterCommand}"/>
+						</DataGrid.InputBindings>
+                                
+					</DataGrid>
+
+				</Border>
+			</Grid>
+
+		</DockPanel>
+
+	</Grid>
+</UserControl>

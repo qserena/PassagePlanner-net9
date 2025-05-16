@@ -1,0 +1,242 @@
+﻿<Controls:MetroWindow
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:Globalization="clr-namespace:System.Globalization;assembly=mscorlib"
+        xmlns:local="clr-namespace:PassagePlanner"
+        xmlns:Custom="http://metro.mahapps.com/winfx/xaml/shared" 
+        x:Class="PassagePlanner.SetValueForAllWaypointsDialog"
+        Title="Set for all waypoints" Height="215" Width="375"
+        WindowStartupLocation="CenterOwner"
+        AllowsTransparency="True"
+        Style="{DynamicResource PassagePlannerPopupMetroWindowStyle}" Background="{x:Null}">
+
+    <Controls:MetroWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="../../Skins/Resources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <local:NumberOfDecimalsWhenNeededConverter x:Key="numberOfDecimalsWhenNeededConverter" />
+
+            <Style x:Key="PassagePlannerPopupMetroWindowStyle" TargetType="{x:Type Controls:MetroWindow}">
+        		<Setter Property="Foreground">
+        			<Setter.Value>
+        				<SolidColorBrush Color="{DynamicResource BlackColor}"/>
+        			</Setter.Value>
+        		</Setter>
+        		<Setter Property="Custom:StylizedBehaviors.Behaviors">
+        			<Setter.Value>
+        				<Custom:StylizedBehaviorCollection>
+        					<Custom:BorderlessWindowBehavior Border="{x:Null}"/>
+        					<Custom:WindowsSettingBehaviour/>
+        					<Custom:GlowWindowBehavior/>
+        				</Custom:StylizedBehaviorCollection>
+        			</Setter.Value>
+        		</Setter>
+        		<Setter Property="TitleForeground" Value="White"/>
+        		<Setter Property="Template">
+        			<Setter.Value>
+        				<ControlTemplate TargetType="{x:Type Controls:MetroWindow}">
+        					<!--<Grid Background="{TemplateBinding Background}">-->
+        					<!--<Grid Background="White" Height="200" Width="360">-->
+                            <!--<Grid Background="White" Height="Auto" MinHeight="200" Width="360">-->
+                            <Grid Name="backGround1" Background="White" Height="200" Width="360">
+
+        						<!--<VisualStateManager.VisualStateGroups>
+        							<VisualStateGroup x:Name="LayoutStates">
+        								<VisualState x:Name="AfterLoaded">
+        									<Storyboard>
+        										<DoubleAnimationUsingKeyFrames BeginTime="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="PART_Border">
+        											<SplineDoubleKeyFrame KeyTime="0" Value="0"/>
+        											<SplineDoubleKeyFrame KeyTime="0:0:0.8" Value="0"/>
+        										</DoubleAnimationUsingKeyFrames>
+        									</Storyboard>
+        								</VisualState>
+        								<VisualState x:Name="BeforeLoaded"/>
+        								<VisualState x:Name="BeforeUnloaded"/>
+        							</VisualStateGroup>
+        						</VisualStateManager.VisualStateGroups>-->
+        						<AdornerDecorator>
+        							<Controls:MetroContentControl FocusVisualStyle="{x:Null}" IsTabStop="False">
+        								<Grid>
+        									<Grid.Background>
+        										<SolidColorBrush Color="{DynamicResource WhiteColor}"/>
+        									</Grid.Background>
+        									<Grid.RowDefinitions>
+        										<RowDefinition Height="Auto"/>
+        										<RowDefinition Height="*"/>
+        									</Grid.RowDefinitions>
+        									<Grid x:Name="PART_TitleBar" Background="{DynamicResource WindowTitleColorBrush}" Height="{Binding TitlebarHeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type Controls:MetroWindow}}}">
+        										<Grid.ColumnDefinitions>
+        											<ColumnDefinition Width="Auto"/>
+        											<ColumnDefinition Width="*"/>
+        										</Grid.ColumnDefinitions>
+        										<!--<Grid.Visibility>
+        											<TemplateBinding Property="ShowTitleBar">
+        												<TemplateBinding.Converter>
+        													<BooleanToVisibilityConverter/>
+        												</TemplateBinding.Converter>
+        											</TemplateBinding>
+        										</Grid.Visibility>-->
+        										<!--<Image RenderOptions.BitmapScalingMode="Fant" RenderOptions.EdgeMode="Aliased" Source="{TemplateBinding Icon}">
+        											<Image.Visibility>
+        												<TemplateBinding Property="ShowIconOnTitleBar">
+        													<TemplateBinding.Converter>
+        														<BooleanToVisibilityConverter/>
+        													</TemplateBinding.Converter>
+        												</TemplateBinding>
+        											</Image.Visibility>
+        										</Image>-->
+        										<TextBlock x:Name="WindowTitleTextBlock" Grid.Column="1" Foreground="{TemplateBinding TitleForeground}" FontSize="16" FontFamily="{DynamicResource HeaderFontFamily}" HorizontalAlignment="Left" Margin="8,-1,0,0" Text="{TemplateBinding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+        									</Grid>
+        									<ContentPresenter x:Name="PART_WindowCommands" Content="{Binding WindowCommands, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type Controls:MetroWindow}}}" HorizontalAlignment="Right" Height="{Binding TitlebarHeight, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type Controls:MetroWindow}}}" Grid.RowSpan="2" VerticalAlignment="Top" Panel.ZIndex="1"/>
+        									<ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" Grid.Row="1"/>
+        									<ItemsControl Grid.Row="0" Grid.RowSpan="2" KeyboardNavigation.TabNavigation="None" VerticalAlignment="Stretch" Panel.ZIndex="2">
+        										<ItemsControl.ItemsPanel>
+        											<ItemsPanelTemplate>
+        												<Grid TextElement.Foreground="{DynamicResource FlyoutWhiteBrush}" IsItemsHost="True"/>
+        											</ItemsPanelTemplate>
+        										</ItemsControl.ItemsPanel>
+        									</ItemsControl>
+        								</Grid>
+        							</Controls:MetroContentControl>
+        						</AdornerDecorator>
+        						<Border x:Name="PART_Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" HorizontalAlignment="Stretch" Opacity="0" VerticalAlignment="Stretch"/>
+        						<ResizeGrip x:Name="WindowResizeGrip" HorizontalAlignment="Right" IsTabStop="False" Visibility="Collapsed" VerticalAlignment="Bottom"/>
+        					</Grid>
+        					<ControlTemplate.Triggers>
+        						<MultiTrigger>
+        							<MultiTrigger.Conditions>
+        								<Condition Property="ResizeMode" Value="CanResizeWithGrip"/>
+        								<Condition Property="WindowState" Value="Normal"/>
+        							</MultiTrigger.Conditions>
+        							<Setter Property="Visibility" TargetName="WindowResizeGrip" Value="Visible"/>
+        						</MultiTrigger>
+        						<Trigger Property="TitleCaps" Value="True">
+        							<Setter Property="Text" TargetName="WindowTitleTextBlock" Value="{Binding Title, Converter={Custom:ToUpperConverter}, RelativeSource={RelativeSource TemplatedParent}}"/>
+        						</Trigger>
+        					</ControlTemplate.Triggers>
+        				</ControlTemplate>
+        			</Setter.Value>
+        		</Setter>
+        	</Style>
+
+            <!-- Custom styling TextBox only to be able to override Validation.ErrorTemplate -->
+            <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource MetroTextBox}">
+                <Setter Property="Validation.ErrorTemplate">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <DockPanel LastChildFill="True">
+                                <Popup IsOpen="True" PlacementTarget="{Binding ElementName=ErrorControl5}"   
+									    Placement="Right"       
+                                        HorizontalOffset="6"
+									    PopupAnimation="Fade"    
+									    AllowsTransparency="False">
+
+                                    <Grid Background="#FFE02010" >
+                                        <TextBlock Margin="4,4,4,2"
+											    Text="{Binding AdornedElement.(Validation.Errors)[0].ErrorContent, ElementName=ErrorControl5}"
+											    Height="18" Width="Auto" VerticalAlignment="Center" TextAlignment="Center"
+											    Foreground="White" Background="#FFE02010"/>
+                                    </Grid>
+                                </Popup>
+                                <Border BorderBrush="#FFE02010" BorderThickness="2" >
+                                    <AdornedElementPlaceholder x:Name="ErrorControl5" Margin="-1.5"/>
+                                </Border>
+                            </DockPanel>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="SelectionBrush" Value="#AA119EDA"/>
+                <Setter Property="Padding" Value="0,1,0,0"/>
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="true">
+                        <Setter Property="BorderThickness" Value="0"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            
+        </ResourceDictionary>
+    </Controls:MetroWindow.Resources>
+    
+	<Controls:MetroWindow.Effect>
+		<DropShadowEffect BlurRadius="10" ShadowDepth="2" Color="Gray" Opacity="0.2"/>
+	</Controls:MetroWindow.Effect>
+
+
+    <!--<Border Width="350" HorizontalAlignment="Center" VerticalAlignment="Center">-->
+    <DockPanel Background="White" LastChildFill="True" >
+
+        <Grid Name="topMargin" DockPanel.Dock="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+        </Grid>
+        
+        <Grid Name="leftMargin" DockPanel.Dock="Left">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+        </Grid>
+
+            <StackPanel DockPanel.Dock="Bottom" Grid.Row="3" HorizontalAlignment="Right" Margin="10,10,10,10" Orientation="Horizontal">
+                <Button x:Name="buttonOkYes" Content="OK" Width="65" Height="24" Margin="10,10,10,10" IsDefault="True" VerticalAlignment="Center" Focusable="True" Click="buttonOkYes_Click"/>
+                <Button x:Name="buttonCancel" Content="Cancel" IsCancel="True" Width="65" Height="24" Margin="10,10,10,10" VerticalAlignment="Center" Click="buttonCancel_Click"/>
+            </StackPanel>
+        
+        <Grid >
+            <Grid.RowDefinitions>
+			    <RowDefinition Height="26"/>
+                <RowDefinition Height="1"/>
+                <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+		
+		    <TextBlock x:Name="textBlockColumnHeaderText" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,2,20,2" FontSize="12"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Top">
+            
+                <TextBox Name="textBoxSpeedRule" Width="50" Style="{StaticResource TextBoxStyle}"
+                         MouseDoubleClick="SelectText" GotKeyboardFocus="SelectText" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton" LostFocus="textBoxSpeedRule_LostFocus">
+                    <TextBox.Text>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="Text" UpdateSourceTrigger="LostFocus"
+                                 ValidatesOnDataErrors="True" 
+                                 Converter="{StaticResource numberOfDecimalsWhenNeededConverter}" ConverterParameter="2">
+                            <Binding.ValidationRules>
+                                <local:SpeedRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+            
+                <TextBox Name="textBoxWaterDepthRule" Width="50" Style="{StaticResource TextBoxStyle}"
+                         MouseDoubleClick="SelectText" GotKeyboardFocus="SelectText" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton" LostFocus="textBoxWaterDepthRule_LostFocus">
+                    <TextBox.Text>
+                        <Binding RelativeSource="{RelativeSource Self}" Path="Text" UpdateSourceTrigger="LostFocus"
+                                 ValidatesOnDataErrors="True" 
+                                 Converter="{StaticResource numberOfDecimalsWhenNeededConverter}" ConverterParameter="2">
+                            <Binding.ValidationRules>
+                                <local:WaterDepthRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+
+                <TextBox Name="textBoxNoValidationRule" Width="280" Style="{StaticResource TextBoxStyle}"
+                         MouseDoubleClick="SelectText" GotKeyboardFocus="SelectText" PreviewMouseLeftButtonDown="SelectivelyIgnoreMouseButton">
+                </TextBox>
+
+                <TextBox Name="textBoxInvisible" Width="1" BorderThickness="0" Focusable="True"/>
+
+            </StackPanel>
+        
+       
+	    </Grid>
+    </DockPanel>
+    <!--</Border>-->
+</Controls:MetroWindow>

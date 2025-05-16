@@ -1,0 +1,389 @@
+﻿<FixedPage xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:Globalization="clr-namespace:System.Globalization;assembly=mscorlib"
+           xmlns:PassagePlanner="clr-namespace:PassagePlanner"
+           HorizontalAlignment="Center" Height="770" Width="1096"
+           DataContext="{Binding RouteVM, Source={StaticResource Locator}}" >
+
+    <FixedPage.Resources>
+        <Style TargetType="{x:Type Border}">
+            <Setter Property="TextBlock.FontSize" Value="10" />
+            <Setter Property="BorderBrush" Value="Black" />
+            <Setter Property="BorderThickness" Value="0.5" />
+        </Style>
+    </FixedPage.Resources>
+
+    <DockPanel Height="770" Width="1096" HorizontalAlignment="Center" VerticalAlignment="Center" LastChildFill="True">
+        <Grid Name="marginTop" DockPanel.Dock="Top" Height="40"/>
+        <Grid Name="marginLeft" DockPanel.Dock="Left" Width="38"/>
+        <Grid Name="marginRight" DockPanel.Dock="Right" Width="38"/>
+        <Grid Name="marginBottom" DockPanel.Dock="Bottom" Height="40">
+            <TextBlock Name="assemblyVersionText" VerticalAlignment="Bottom" HorizontalAlignment="Left" Text="Printed from Passage Planner version 1.0.0. Copyright © Seaware AB 2014. All rights reserved." FontSize="8" Margin="0,10,0,18"/>
+        </Grid>
+        
+        <StackPanel Name="stackPanelMain" Orientation="Vertical">
+            <Grid Name="gridLogoAndHeader">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Name="columnLogo" Width="*"/>
+                    <ColumnDefinition Name="columnHeader" Width="4*"/>
+                    <ColumnDefinition Name="columnDatePrepared" Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0" Source="../../Images/bw_logo.jpg" UseLayoutRounding="True" Height="70" Width="Auto" Margin="0,0,0,10" HorizontalAlignment="Left"/>
+                <TextBlock  Grid.Column="1" Text="PASSAGE PLAN - Part A" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <StackPanel Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Right">
+                    <StackPanel  Name="stackPanelDate" Orientation="Horizontal" FlowDirection="LeftToRight">
+                        <TextBlock Text="Date prepared:" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="3"/>
+                        <TextBlock Name="textBlockDate" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="3"/>
+                    </StackPanel>
+                    <StackPanel  Name="stackPanelPageNo" Orientation="Horizontal" FlowDirection="LeftToRight">
+                        <TextBlock Text="Page:" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="3"/>
+                        <TextBlock Name="textBlockPageNo" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="3"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+            <Border Name="baseInformationSection" BorderBrush="Black" BorderThickness="0.5" Padding="5,5,5,10" Margin="0,0,0,10">
+                <Grid Name="gridTop" Height="Auto">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Name="columnShip" Width="*"/>
+                        <ColumnDefinition Name="columnEngineStatus" Width="*"/>
+                        <ColumnDefinition Name="columnNavigationalBridgeWatchConditions" Width="*"/>
+
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0" Margin="10,10,20,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Vessel: " Grid.Column="0" Grid.Row="0"/>
+                        <TextBlock Grid.Column="1" DataContext="{Binding VesselVM, Source={StaticResource Locator}}" 
+                                 Grid.ColumnSpan="4" Text="{Binding VesselName, Mode=OneWay}" Grid.Row="0"  Padding="0"/>
+
+                        <TextBlock Text="Route: " Grid.Column="0" Grid.Row="1"/>
+                        <TextBlock Grid.Column="1" DataContext="{Binding RouteVM, Source={StaticResource Locator}}" 
+                                 Grid.ColumnSpan="4" Text="{Binding RouteName, Mode=OneWay}" Grid.Row="1"  Padding="0"/>
+
+                        <TextBlock Text="Total distance: " Grid.Column="0" Grid.Row="2"/>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="2">
+                            <TextBlock  Padding="0" Margin="0,0,3,0"
+                                     DataContext="{Binding RouteVM, Source={StaticResource Locator}}"
+                                     Text="{Binding TotalDistance, Mode=OneWay, StringFormat=\{0:0.0\}}"/>
+                            <TextBlock Text="NM"/>
+                        </StackPanel>
+
+                        
+                        <TextBlock Text="Average speed: " Grid.Column="0" Grid.Row="3"/>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="3">
+                            <TextBlock Padding="0" Margin="0,0,3,0"
+                                     DataContext="{Binding RouteVM, Source={StaticResource Locator}}"
+                                     Text="{Binding AverageSpeed, Mode=OneWay, StringFormat=\{0:0.0\}}"/>
+                            <TextBlock Text="knots"/>
+                        </StackPanel>
+
+                        <TextBlock Text="Sailing time: " Grid.Column="0" Grid.Row="4"/>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="4">
+                            <TextBlock Padding="0" Margin="0,0,3,0"
+                                     DataContext="{Binding RouteVM, Source={StaticResource Locator}}"
+                                     Text="{Binding TotalSailingTime.Days, Mode=OneWay}"/>
+                            <TextBlock Text="days" Margin="0,0,5,0"/>
+                            <TextBlock Padding="0" Margin="0,0,3,0"
+                                     DataContext="{Binding RouteVM, Source={StaticResource Locator}}"
+                                     Text="{Binding TotalSailingTimeHoursMinutes, Mode=OneWay}"/>
+                            <TextBlock Text="hours and minutes" />
+                        </StackPanel>
+
+                        <TextBlock Text="Arrival time [LT]: " Grid.Column="0" Grid.Row="5"/>
+                        <TextBlock Grid.Column="1" Grid.Row="5" TextAlignment="Left"  Padding="0"
+                                 DataContext="{Binding RouteVM, Source={StaticResource Locator}}"
+                                 Text="{Binding ArrivalTimeLocal, Mode=OneWay,  ConverterCulture={x:Static Globalization:CultureInfo.CurrentCulture}, StringFormat=\{0:g\}}"  Grid.ColumnSpan="4" />
+
+                        <TextBlock Text="Arrival time [UTC]: " Grid.Column="0" Grid.Row="6"/>
+                        <TextBlock Grid.Column="1" Grid.Row="6" TextAlignment="Left"  Padding="0"
+                                 DataContext="{Binding RouteVM, Source={StaticResource Locator}}"
+                                 Text="{Binding ArrivalTimeUtc, Mode=OneWay,  ConverterCulture={x:Static Globalization:CultureInfo.CurrentCulture}, StringFormat=\{0:g\}}"  Grid.ColumnSpan="4" />
+
+                        <TextBlock Text="Deepest draught: " Grid.Column="0" Grid.Row="7"/>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="7">
+                            <TextBlock Padding="0" Margin="0,0,3,0"
+                                     DataContext="{Binding RouteVM, Source={StaticResource Locator}}"
+                                     Text="{Binding DraughtDeepest, Mode=OneWay, StringFormat=\{0:0.0\}}"/>
+                            <TextBlock Text="m"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Grid.Column="1" Margin="65,10,20,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="11*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Engine statuses:" Margin="0,0,3,3" VerticalAlignment="Bottom"/>
+
+                        <TextBlock Text="F" Grid.Column="0" Grid.Row="1"/>
+                        <TextBlock Text="=" Grid.Column="1" Grid.Row="1"/>
+                        <TextBlock Text="Full speed (Sea)" Grid.Column="2" Grid.Row="1"/>
+
+                        <TextBlock Text="M" Grid.Column="0" Grid.Row="2"/>
+                        <TextBlock Text="=" Grid.Column="1" Grid.Row="2"/>
+                        <TextBlock Text="Maneuver Speed" Grid.Column="2" Grid.Row="2"/>
+
+                        <TextBlock Text="H" Grid.Column="0" Grid.Row="3"/>
+                        <TextBlock Text="=" Grid.Column="1" Grid.Row="3"/>
+                        <TextBlock Text="Half Speed" Grid.Column="2" Grid.Row="3"/>
+
+                        <TextBlock Text="S" Grid.Column="0" Grid.Row="4"/>
+                        <TextBlock Text="=" Grid.Column="1" Grid.Row="4"/>
+                        <TextBlock Text="Slow" Grid.Column="2" Grid.Row="4"/>
+
+
+                        <TextBlock Text="DS" Grid.Column="0" Grid.Row="5"/>
+                        <TextBlock Text="=" Grid.Column="1" Grid.Row="5"/>
+                        <TextBlock Text="Dead Slow" Grid.Column="2" Grid.Row="5"/>
+
+                    </Grid>
+                    <Grid Grid.Column="2" Margin="50,10,40,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="14*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="15"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Navigational bridge watch conditions:" Margin="0,0,3,3" VerticalAlignment="Bottom"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Margin="1" DataContext="{Binding VesselVM, Source={StaticResource Locator}}" Text="{Binding NavigationalBridgeWatchConditions[0].Abbreviation, Mode=OneWay}" />
+                        <TextBlock Grid.Row="2" Grid.Column="0" Margin="1" DataContext="{Binding VesselVM, Source={StaticResource Locator}}" Text="{Binding NavigationalBridgeWatchConditions[1].Abbreviation, Mode=OneWay}" />
+                        <TextBlock Grid.Row="3" Grid.Column="0" Margin="1" DataContext="{Binding VesselVM, Source={StaticResource Locator}}" Text="{Binding NavigationalBridgeWatchConditions[2].Abbreviation, Mode=OneWay}" />
+                        <TextBlock Grid.Row="4" Grid.Column="0" Margin="1" DataContext="{Binding VesselVM, Source={StaticResource Locator}}" Text="{Binding NavigationalBridgeWatchConditions[3].Abbreviation, Mode=OneWay}" />
+                        <TextBlock Grid.Row="5" Grid.Column="0" Margin="1" DataContext="{Binding VesselVM, Source={StaticResource Locator}}" Text="{Binding NavigationalBridgeWatchConditions[4].Abbreviation, Mode=OneWay}" />
+                        <TextBlock Grid.Row="6" Grid.Column="0" Margin="1" DataContext="{Binding VesselVM, Source={StaticResource Locator}}" Text="{Binding NavigationalBridgeWatchConditions[5].Abbreviation, Mode=OneWay}" />
+                        <TextBlock Grid.Row="7" Grid.Column="0" Margin="1" DataContext="{Binding VesselVM, Source={StaticResource Locator}}" Text="{Binding NavigationalBridgeWatchConditions[6].Abbreviation, Mode=OneWay}" />
+                        <TextBlock Grid.Row="8" Grid.Column="0" Margin="1" DataContext="{Binding VesselVM, Source={StaticResource Locator}}" Text="{Binding NavigationalBridgeWatchConditions[7].Abbreviation, Mode=OneWay}" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="1" Margin="1" Text="=" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" Margin="1" Text="=" />
+                        <TextBlock Grid.Row="3" Grid.Column="1" Margin="1" Text="=" />
+                        <TextBlock Grid.Row="4" Grid.Column="1" Margin="1" Text="=" />
+                        <TextBlock Grid.Row="5" Grid.Column="1" Margin="1" Text="=" />
+                        <TextBlock Grid.Row="6" Grid.Column="1" Margin="1" Text="=" />
+                        <TextBlock Grid.Row="7" Grid.Column="1" Margin="1" Text="=" />
+                        <TextBlock Grid.Row="8" Grid.Column="1" Margin="1" Text="=" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="2" Margin="1" DataContext="{Binding VesselVM, Source={StaticResource Locator}}" Text="{Binding NavigationalBridgeWatchConditions[0].DefinitionText, Mode=OneWay}" />
+                        <TextBlock Grid.Row="2" Grid.Column="2" Margin="1" DataContext="{Binding VesselVM, Source={StaticResource Locator}}" Text="{Binding NavigationalBridgeWatchConditions[1].DefinitionText, Mode=OneWay}" />
+                        <TextBlock Grid.Row="3" Grid.Column="2" Margin="1" DataContext="{Binding VesselVM, Source={StaticResource Locator}}" Text="{Binding NavigationalBridgeWatchConditions[2].DefinitionText, Mode=OneWay}" />
+                        <TextBlock Grid.Row="4" Grid.Column="2" Margin="1" DataContext="{Binding VesselVM, Source={StaticResource Locator}}" Text="{Binding NavigationalBridgeWatchConditions[3].DefinitionText, Mode=OneWay}" />
+                        <TextBlock Grid.Row="5" Grid.Column="2" Margin="1" DataContext="{Binding VesselVM, Source={StaticResource Locator}}" Text="{Binding NavigationalBridgeWatchConditions[4].DefinitionText, Mode=OneWay}" />
+                        <TextBlock Grid.Row="6" Grid.Column="2" Margin="1" DataContext="{Binding VesselVM, Source={StaticResource Locator}}" Text="{Binding NavigationalBridgeWatchConditions[5].DefinitionText, Mode=OneWay}" />
+                        <TextBlock Grid.Row="7" Grid.Column="2" Margin="1" DataContext="{Binding VesselVM, Source={StaticResource Locator}}" Text="{Binding NavigationalBridgeWatchConditions[6].DefinitionText, Mode=OneWay}" />
+                        <TextBlock Grid.Row="8" Grid.Column="2" Margin="1" DataContext="{Binding VesselVM, Source={StaticResource Locator}}" Text="{Binding NavigationalBridgeWatchConditions[7].DefinitionText, Mode=OneWay}" />
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <StackPanel Name="waypointPanel" Margin="0,0,0,0">
+                <Grid Name="waypointGridHeader" HorizontalAlignment="Left">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="62"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <!--NOTE! First column is set to 26.5 instead of 26 in order to compensate for datagrid horizontal offset-->
+                        <ColumnDefinition Name="headerWaypointNo" Width="26.5" />
+                        <ColumnDefinition Name="headerWaypointName" Width="117" />
+                        <ColumnDefinition Name="headerLatitude" Width="69" />
+                        <ColumnDefinition Name="headerLongitude" Width="73" />
+                        <ColumnDefinition Name="headerCourse" Width="40" />
+                        <ColumnDefinition Name="headerDistance" Width="44" />
+                        <ColumnDefinition Name="headerLegSpeed" Width="50" />
+                        <ColumnDefinition Name="headerUnderKeelClearence" Width="120" />
+                        <ColumnDefinition Name="headerEngineStatus" Width="40" />
+                        <ColumnDefinition Name="headerWatchLevel" Width="35" />
+                        <ColumnDefinition Name="headerSecurityLevel" Width="42" />
+                        <ColumnDefinition Name="headerLegSailingTime" Width="54" />
+                        <ColumnDefinition Name="headerEtaWp" Width="102" />
+                        <ColumnDefinition Name="headerDistanceSailed" Width="44" />
+                        <ColumnDefinition Name="headerDistanceToGo" Width="44" />
+                        <ColumnDefinition Name="headerTimeToGo" Width="54" />
+                        <ColumnDefinition Name="headerMaxIntervalsBetweenPosFix" Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Row="0" Grid.Column="0">
+                        <Border BorderThickness="1,0.5,0.5,0.5">
+                            <TextBlock Text="WP no" VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" />
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="1">
+                        <Border>
+                            <TextBlock Text="Waypoint name" VerticalAlignment="Center" TextAlignment="Center" />
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="2">
+                        <Border>
+                            <TextBlock Text="Latitude" VerticalAlignment="Center" TextAlignment="Center" />
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="3">
+                        <Border>
+                            <TextBlock Text="Longitude" VerticalAlignment="Center" TextAlignment="Center" />
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="4">
+                        <Border >
+                            <TextBlock Text="Course to next WP [deg]" VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" />
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="5">
+                        <Border >
+                            <TextBlock Text="Distance to next WP [NM]" VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Margin="2"/>
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="6">
+                        <Border >
+                            <TextBlock Text="Leg speed to next WP [knots]" VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Margin="2"/>
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="7">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="3*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Row="0" Grid.Column="0">
+                            <TextBlock Text="Under Keel Clearence" VerticalAlignment="Bottom" TextAlignment="Center" Height="19" />
+                        </Border>
+                        <Grid Grid.Row="1" Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Name="headerWaterDepth" Width="50*" />
+                                <ColumnDefinition Name="headerSquat" Width="35*" />
+                                <ColumnDefinition Name="headerUkc" Width="35*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Row="0" Grid.Column="0">
+                                <TextBlock Text="W. Depth [m]"  VerticalAlignment="Bottom" TextAlignment="Center" TextWrapping="Wrap" Height="31"/>
+                            </Border>
+                            <Border Grid.Row="0" Grid.Column="1">
+                                <TextBlock Text="Squat [m]"  VerticalAlignment="Bottom" TextAlignment="Center" TextWrapping="Wrap" Height="31"/>
+                            </Border>
+                            <Border Grid.Row="0" Grid.Column="2">
+                                <TextBlock Text="UKC [m]"  VerticalAlignment="Bottom" TextAlignment="Center" TextWrapping="Wrap" Height="31"/>
+                            </Border>
+                        </Grid>
+
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="8">
+                        <Border>
+                            <TextBlock Text="Engine status" VerticalAlignment="Center" TextWrapping="Wrap"  TextAlignment="Center" />
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="9">
+                        <Border>
+                            <TextBlock Text="Nav. watch level" VerticalAlignment="Center" TextWrapping="Wrap"  TextAlignment="Center" />
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="10">
+                        <Border>
+                            <TextBlock Text="Security level" VerticalAlignment="Center" TextWrapping="Wrap"  TextAlignment="Center" />
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="11">
+                        <Border>
+                            <TextBlock Text="Leg sailing time to next WP" VerticalAlignment="Center" TextWrapping="Wrap"  TextAlignment="Center" Margin="2"/>
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="12">
+                        <Border>
+                            <TextBlock Text="ETA WP (UTC)" VerticalAlignment="Center" TextWrapping="Wrap"  TextAlignment="Center" />
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="13">
+                        <Border>
+                            <TextBlock Text="Distance sailed [NM]" VerticalAlignment="Center" TextWrapping="Wrap"  TextAlignment="Center" />
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="14">
+                        <Border>
+                            <TextBlock Text="Distance to go [NM]" VerticalAlignment="Center" TextWrapping="Wrap"  TextAlignment="Center" />
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="15">
+                        <Border>
+                            <TextBlock Text="Time to go [days hh:mm]" VerticalAlignment="Center" TextWrapping="Wrap"  TextAlignment="Center" />
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="16" >
+                        <Border BorderThickness="0.5,0.5,1,0.5">
+                            <!--Special fix to make this column header fill the entire gap to the right-->
+                            <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock Text="            Max intervals            " HorizontalAlignment="Center" />
+                                <TextBlock Text="            between pos.            " HorizontalAlignment="Center"/>
+                                <TextBlock Text="            Fix [minutes]            " HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                </Grid>
+            </StackPanel>
+
+        </StackPanel>
+    </DockPanel>
+</FixedPage>

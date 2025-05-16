@@ -1,0 +1,292 @@
+﻿<FixedPage xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:Globalization="clr-namespace:System.Globalization;assembly=mscorlib"
+           xmlns:PassagePlanner="clr-namespace:PassagePlanner"
+           HorizontalAlignment="Center" Height="770" Width="1096"
+           DataContext="{Binding RouteVM, Source={StaticResource Locator}}" >
+
+    <!--HorizontalAlignment="Center" Height="700" Width="1000"-->
+
+    <!--<FixedPage.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Skins/MainSkin.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="../Skins/Resources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </FixedPage.Resources>-->
+    <FixedPage.Resources>
+        <Style TargetType="{x:Type Border}">
+            <!--<Setter Property="Background" Value="Bisque" />-->
+            <Setter Property="TextBlock.FontSize" Value="10" />
+            <Setter Property="BorderBrush" Value="Black" />
+            <Setter Property="BorderThickness" Value="0.5" />
+            <!--<Setter Property="HorizontalAlignment" Value="Stretch" />-->
+        </Style>
+    </FixedPage.Resources>
+
+    <DockPanel Height="770" Width="1096" HorizontalAlignment="Center" VerticalAlignment="Center" LastChildFill="True">
+        <Grid Name="marginTop" DockPanel.Dock="Top" Height="40"/>
+        <Grid Name="marginLeft" DockPanel.Dock="Left" Width="38"/>
+        <Grid Name="marginRight" DockPanel.Dock="Right" Width="38"/>
+        <Grid Name="marginBottom" DockPanel.Dock="Bottom" Height="40">
+            <TextBlock Name="assemblyVersionText" VerticalAlignment="Bottom" HorizontalAlignment="Left" Text="Printed from Passage Planner version 1.0.0. Copyright © Seaware AB 2014. All rights reserved." FontSize="8" Margin="0,10,0,18"/>
+        </Grid>
+
+        <StackPanel Name="stackPanelMain" Orientation="Vertical">
+            <Grid Name="gridLogoAndHeader">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Name="columnLogo" Width="2*"/>
+                    <ColumnDefinition Name="columnHeader" Width="11*"/>
+                    <ColumnDefinition Name="columnDatePrepared" Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0" Source="../../Images/bw_logo.jpg" UseLayoutRounding="True" Height="70" Width="Auto" Margin="0,0,0,10" HorizontalAlignment="Left"/>
+                <TextBlock  Grid.Column="1" Text="Charts &amp; Publications, Navigational Warnings &amp; Weather Forecasts, Reportings" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <StackPanel Grid.Column="2" Orientation="Vertical" HorizontalAlignment="Right">
+                    <StackPanel  Name="stackPanelDate" Orientation="Horizontal" FlowDirection="LeftToRight">
+                        <TextBlock Text="Date prepared:" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="3"/>
+                        <TextBlock Name="textBlockDate" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="3"/>
+                    </StackPanel>
+                    <StackPanel  Name="stackPanelPageNo" Orientation="Horizontal" FlowDirection="LeftToRight">
+                        <TextBlock Text="Page:" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="3"/>
+                        <TextBlock Name="textBlockPageNo" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="3"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+            
+                <Border Name="baseInformationSection" BorderBrush="Black" BorderThickness="0,0,0,0.5" Padding="0,5,5,2">
+                    <Grid Name="gridTop" Height="Auto">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Name="columnShip" Width="*"/>
+                            <ColumnDefinition Name="columnTotalDistance" Width="*"/>
+                            <ColumnDefinition Name="columnDepartureDraught" Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Column="0" Margin="0,0,20,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="39"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Vessel: " Grid.Column="0" Grid.Row="0"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" DataContext="{Binding VesselVM, Source={StaticResource Locator}}" 
+                                     Text="{Binding VesselName, Mode=OneWay}" Padding="0"/>
+                        </Grid>
+
+                        <Grid Grid.Column="1" Margin="0,0,20,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="37"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Route: " Grid.Column="0" Grid.Row="0"/>
+                        <TextBlock Grid.Column="1" DataContext="{Binding RouteVM, Source={StaticResource Locator}}" 
+                                     Text="{Binding RouteName, Mode=OneWay}" Grid.Row="0"  Padding="0"/>
+                        </Grid>
+
+                        <Grid Grid.Column="2" Margin="0,0,20,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="3*"/>
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+
+                    </Grid>
+                </Border>
+
+                <StackPanel Name="waypointPanel" Margin="0,15,0,0">
+                <Grid Name="waypointGridHeader" HorizontalAlignment="Left">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <!--NOTE! First column is set to 26.5 instead of 26 in order to compensate for datagrid horizontal offset-->
+                        <ColumnDefinition Name="headerWaypointNo" Width="26.5" />
+                        <ColumnDefinition Name="headerWaypointName" Width="117" />
+                        <ColumnDefinition Name="headerChartNumbers" Width="150" />
+                        <ColumnDefinition Name="headerListOfLights" Width="135" />
+                        <ColumnDefinition Name="headerListOfRadioSignals" Width="135" />
+                        <ColumnDefinition Name="headerSailingDirections" Width="135" />
+                        <ColumnDefinition Name="headerNavtex" Width="70" />
+                        <ColumnDefinition Name="headerReportings" Width="*" />
+
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Row="0" Grid.Column="0">
+                        <Border BorderThickness="1,0.5,0.5,0.5">
+                            <TextBlock Text="WP no" VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" />
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="1">
+                        <Border>
+                            <TextBlock Text="Waypoint name" VerticalAlignment="Center" TextAlignment="Center" />
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="2">
+                        <Border>
+                            <TextBlock Text="Chart number(s)" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Width="50"/>
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="3">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Row="0" Grid.Column="0">
+                            <TextBlock Text="List of lights" VerticalAlignment="Center" TextAlignment="Center"  />
+                        </Border>
+                        <Grid Grid.Row="1" Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="20" />
+                            </Grid.RowDefinitions>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Name="headerVolume1" Width="85" />
+                                <ColumnDefinition Name="headerPages1" Width="50" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Row="0" Grid.Column="0">
+                                <TextBlock Text="Volume"  VerticalAlignment="Center" TextAlignment="Center" />
+                            </Border>
+                            <Border Grid.Row="0" Grid.Column="1">
+                                <TextBlock Text="Page(s)"  VerticalAlignment="Center" TextAlignment="Center" />
+                            </Border>
+                        </Grid>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Row="0" Grid.Column="0">
+                            <TextBlock Text="List of radio signals" VerticalAlignment="Center" TextAlignment="Center"  />
+                        </Border>
+                        <Grid Grid.Row="1" Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="20" />
+                            </Grid.RowDefinitions>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Name="headerVolume2" Width="85" />
+                                <ColumnDefinition Name="headerPages2" Width="50" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Row="0" Grid.Column="0">
+                                <TextBlock Text="Volume"  VerticalAlignment="Center" TextAlignment="Center" />
+                            </Border>
+                            <Border Grid.Row="0" Grid.Column="1">
+                                <TextBlock Text="Page(s)"  VerticalAlignment="Center" TextAlignment="Center" />
+                            </Border>
+                        </Grid>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Row="0" Grid.Column="0">
+                            <TextBlock Text="Sailing directions" VerticalAlignment="Center" TextAlignment="Center"  />
+                        </Border>
+                        <Grid Grid.Row="1" Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="20" />
+                            </Grid.RowDefinitions>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Name="headerVolume3" Width="85" />
+                                <ColumnDefinition Name="headerPages3" Width="50" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Row="0" Grid.Column="0">
+                                <TextBlock Text="Volume"  VerticalAlignment="Center" TextAlignment="Center" />
+                            </Border>
+                            <Border Grid.Row="0" Grid.Column="1">
+                                <TextBlock Text="Page(s)"  VerticalAlignment="Center" TextAlignment="Center" />
+                            </Border>
+                        </Grid>
+                    </Grid>
+                    
+                    <Grid Grid.Row="0" Grid.Column="6">
+                        <Border >
+                            <TextBlock Text="NAVTEX channel(s)" VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" />
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="0" Grid.Column="7">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Row="0" Grid.Column="0" BorderThickness="0.5, 0.5, 1, 0.5">
+                            <TextBlock Text="Reportings" VerticalAlignment="Center" TextAlignment="Center"  />
+                        </Border>
+                        <Grid Grid.Row="1" Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="20" />
+                            </Grid.RowDefinitions>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Name="headerReportTo" Width="140" />
+                                <ColumnDefinition Name="headerChannelTelephone" Width="110" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Row="0" Grid.Column="0">
+                                <TextBlock Text="Report to"  VerticalAlignment="Center" TextAlignment="Center" />
+                            </Border>
+                            <Border BorderThickness="0.5, 0.5, 1, 0.5" Grid.Row="0" Grid.Column="1">
+                                <TextBlock Text="Channel / tlph no"  VerticalAlignment="Center" TextAlignment="Center" />
+                            </Border>
+                        </Grid>
+                    </Grid>
+
+
+                </Grid>
+            </StackPanel>
+
+        </StackPanel>
+    </DockPanel>
+</FixedPage>
