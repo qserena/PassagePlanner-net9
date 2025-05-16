@@ -111,43 +111,4 @@ namespace PassagePlanner
         }
 	}
 
-    public class LocalMapSource : MultiScaleTileSource
-    {
-        string filepath;
-        public LocalMapSource()
-            : base(0x8000000, 0x8000000, 256, 256, 0)
-        {
-            string executableDirectory = AppDomain.CurrentDomain.BaseDirectory;
-
-            string tileslocation = string.Empty;
-
-            if (Directory.Exists(executableDirectory + "MapTiles"))
-            {
-                tileslocation = string.Format(@"{0}MapTiles\", executableDirectory);
-            }
-            else if (Directory.Exists(executableDirectory + "..\\..\\MapTiles"))
-            {
-                tileslocation = string.Format(@"{0}..\..\MapTiles\", executableDirectory);
-            }
-            else
-            {
-                throw new DirectoryNotFoundException("Directory MapTiles not found (executable directory: " + executableDirectory + ")");
-            }
-
-            filepath = tileslocation + @"{0}\{1}\{2}.png";
-        }
-
-        protected override void GetTileLayers(int tileLevel, int tilePositionX, int tilePositionY, IList<object> tileImageLayerSources)
-        {
-            bool designMode = System.ComponentModel.DesignerProperties.GetIsInDesignMode(new DependencyObject());
-
-            if (!designMode)
-            {
-                if (tileLevel > 8)
-                {
-                    tileImageLayerSources.Add(new Uri(string.Format(filepath, tileLevel - 8, tilePositionX, tilePositionY)));
-                }
-            }
-        }
-    }
 }
