@@ -16,11 +16,11 @@
     <UserControl.Resources>
         <!-- template for the waypoint items in the C1Maps control -->
         <DataTemplate x:Key="_itemTemplate" >
-            <c1:C1VectorPlacemark ToolTipService.ToolTip="{Binding Path=ToolTip, Mode=TwoWay}" GeoPoint="{Binding Path=LongLat, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Fill="White" Stroke="CornflowerBlue" >
-                <c1:C1VectorPlacemark.Geometry>
+            <c1:VectorPlacemark ToolTipService.ToolTip="{Binding Path=ToolTip, Mode=TwoWay}" GeoPoint="{Binding Path=LongLat, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Fill="White" Stroke="CornflowerBlue" >
+                <c1:VectorPlacemark.Geometry>
                     <EllipseGeometry RadiusX="5" RadiusY="5" />
-                </c1:C1VectorPlacemark.Geometry>
-            </c1:C1VectorPlacemark>
+                </c1:VectorPlacemark.Geometry>
+            </c1:VectorPlacemark>
         </DataTemplate>
                
      </UserControl.Resources>
@@ -111,15 +111,15 @@
 
                     <c1:C1Maps x:Name="map" Source="{Binding MapSource}" ShowTools="False" Center="{Binding MapCenter, Mode=TwoWay}" Zoom="{Binding MapZoom, Mode=TwoWay}">
                         
-                        <c1:C1VectorLayer Name="vlPoolline" MinSize="0" Margin="2,0,-2,0">
-                            <c1:C1VectorLayer.Resources>
-                                <PassagePlanner:C1VectorPolylineBindingProxy x:Key="proxy" Data="{Binding}" />
-                            </c1:C1VectorLayer.Resources>
-                            <c1:C1VectorPolyline Name="polyline1" PointsSource="{Binding Data.PolylinePoints, Source={StaticResource proxy}, Mode=TwoWay}" StrokeThickness="2" Stroke="CornflowerBlue"/>
-                            <c1:C1VectorPolyline Name="polyline2" PointsSource="{Binding Data.PolylinePoints2, Source={StaticResource proxy}, Mode=TwoWay}" StrokeThickness="2" Stroke="CornflowerBlue"/>
-                        </c1:C1VectorLayer>
+                        <c1:VectorLayer Name="vlPoolline" MinSize="0" Margin="2,0,-2,0">
+                            <c1:VectorLayer.Resources>
+                                <PassagePlanner:VectorPolylineBindingProxy x:Key="proxy" Data="{Binding}" />
+                            </c1:VectorLayer.Resources>
+                            <c1:VectorPolyline Name="polyline1" PointsSource="{Binding Data.PolylinePoints, Source={StaticResource proxy}, Mode=TwoWay}" StrokeThickness="2" Stroke="CornflowerBlue"/>
+                            <c1:VectorPolyline Name="polyline2" PointsSource="{Binding Data.PolylinePoints2, Source={StaticResource proxy}, Mode=TwoWay}" StrokeThickness="2" Stroke="CornflowerBlue"/>
+                        </c1:VectorLayer>
 
-                        <c1:C1VectorLayer Name="vlWaypoints" ItemsSource="{Binding Waypoints, Mode=TwoWay}" 
+                        <c1:VectorLayer Name="vlWaypoints" ItemsSource="{Binding Waypoints, Mode=TwoWay}" 
                                           ItemTemplate="{StaticResource _itemTemplate}"/>
                       
                     </c1:C1Maps>

@@ -90,7 +90,7 @@ namespace PassagePlanner
             }
         }
 
-        private void C1VectorLayer_SourceUpdated(object sender, DataTransferEventArgs e)
+        private void VectorLayer_SourceUpdated(object sender, DataTransferEventArgs e)
         {
             List<Point> linePoints = new List<Point>();
         }

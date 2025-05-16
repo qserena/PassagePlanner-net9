@@ -2,13 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PassagePlanner
 {
-    public class LocalMapSource : C1MultiScaleTileSource
+    public class LocalMapSource : MultiScaleTileSource
     {
         string filepath;
         public LocalMapSource()

@@ -17,7 +17,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
                 <ResourceDictionary Source="../../Skins/Resources.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
@@ -30,10 +30,8 @@
         		<Setter Property="Custom:StylizedBehaviors.Behaviors">
         			<Setter.Value>
         				<Custom:StylizedBehaviorCollection>
-        					<Custom:BorderlessWindowBehavior Border="{x:Null}"/>
-        					<Custom:WindowsSettingBehaviour/>
-        					<Custom:GlowWindowBehavior/>
-        				</Custom:StylizedBehaviorCollection>
+                            <Custom:BorderlessWindowBehavior />
+                        </Custom:StylizedBehaviorCollection>
         			</Setter.Value>
         		</Setter>
         		<Setter Property="TitleForeground" Value="White"/>
@@ -115,7 +113,7 @@
         							</MultiTrigger.Conditions>
         							<Setter Property="Visibility" TargetName="WindowResizeGrip" Value="Visible"/>
         						</MultiTrigger>
-        						<Trigger Property="TitleCaps" Value="True">
+        						<Trigger Property="TitleCharacterCasing" Value="Upper">
         							<Setter Property="Text" TargetName="WindowTitleTextBlock" Value="{Binding Title, Converter={Custom:ToUpperConverter}, RelativeSource={RelativeSource TemplatedParent}}"/>
         						</Trigger>
         					</ControlTemplate.Triggers>
