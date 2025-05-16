@@ -111,7 +111,7 @@ namespace PassagePlanner
         }
 	}
 
-    public class LocalMapSource : C1MultiScaleTileSource
+    public class LocalMapSource : MultiScaleTileSource
     {
         string filepath;
         public LocalMapSource()
