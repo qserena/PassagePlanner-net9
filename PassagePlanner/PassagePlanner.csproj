@@ -41,7 +41,6 @@
     <PackageReference Include="System.ServiceModel.Federation" Version="8.1.2" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Licenses.licx" />
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
