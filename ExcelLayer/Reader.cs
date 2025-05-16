@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 using Excel = Microsoft.Office.Interop.Excel;
 
 
@@ -26,7 +22,7 @@ namespace ExcelLayer
 
             Excel.Worksheet excelworksheet = (Excel.Worksheet)excelappworkbook.Worksheets.get_Item(1);
             Excel.Range range = excelworksheet.UsedRange;
-            object[,] worksheetValuesArray = range.get_Value(Type.Missing);
+            object[,] worksheetValuesArray = (object[,])range.get_Value(Type.Missing);
 
             int numberOfRows = range.Rows.Count;
             int numberOfColumns = range.Columns.Count;

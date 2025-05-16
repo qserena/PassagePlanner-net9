@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
-using System.Windows.Forms;
 using System.Diagnostics;
 using System.Reflection;
 
@@ -29,7 +28,7 @@ namespace EcdisLayer
             // An aggregate catalog that combines multiple catalogs
             var catalog = new AggregateCatalog();
 
-            string executablePath = Path.GetDirectoryName(Application.ExecutablePath);
+            string executablePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             _pluginCatalog = Path.Combine(executablePath, "EcdisPlugins");
 
